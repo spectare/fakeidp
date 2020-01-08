@@ -14,17 +14,6 @@ jobs:
       - checkout
       - restore_cache:
           key: project-cache
-      - run:
-          name: Check formatting
-          command: |
-            rustfmt --version
-            cargo fmt -- 
-        #- run:
-        #  name: Nightly Build
-        #  command: |
-        #    rustup run nightly rustc --version --verbose
-        #    rustup run nightly cargo --version --verbose
-        #    rustup run nightly cargo build
        - run:
            name: Stable Build
            command: |
