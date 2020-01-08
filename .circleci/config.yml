@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: olger/rust-build:1-1.33.0
+      - image: circleci/rust:1.40-buster 
 
     environment:
       # Set your codecov token if your repository is private.
@@ -19,21 +19,19 @@ jobs:
           command: |
             rustfmt --version
             cargo fmt -- 
-      - run:
-          name: Nightly Build
-          command: |
-            rustup run nightly rustc --version --verbose
-            rustup run nightly cargo --version --verbose
-            rustup run nightly cargo build
-      # - run:
-      #     name: Stable Build
-      #     command: |
-      #       rustup run stable rustc --version --verbose
-      #       rustup run stable cargo --version --verbose
-      #       rustup run stable cargo build
+        #- run:
+        #  name: Nightly Build
+        #  command: |
+        #    rustup run nightly rustc --version --verbose
+        #    rustup run nightly cargo --version --verbose
+        #    rustup run nightly cargo build
+       - run:
+           name: Stable Build
+           command: |
+             rustup run stable cargo build
       - run:
           name: Test
-          command: rustup run nightly cargo test
+          command: rustup run stable cargo test
       - run:
           name: Upload Coverage
           command: |
