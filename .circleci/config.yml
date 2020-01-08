@@ -17,6 +17,8 @@ jobs:
       - run:
           name: Stable Build
           command: |
+            rustup run stable rustc --version --verbose                                                                
+            rustup run stable cargo --version --verbose       
             rustup run stable cargo build
       - run:
           name: Test
