@@ -1,0 +1,45 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: olger/rust-build:1-1.33.0
+
+    environment:
+      # Set your codecov token if your repository is private.
+      CODECOV_TOKEN: "4f78201f-4b40-4d72-a8cc-64428bd0d4dd" 
+      TZ: "/usr/share/zoneinfo/Europe/Paris"
+
+    steps:
+      - checkout
+      - restore_cache:
+          key: project-cache
+      - run:
+          name: Check formatting
+          command: |
+            rustfmt --version
+            cargo fmt -- 
+      - run:
+          name: Nightly Build
+          command: |
+            rustup run nightly rustc --version --verbose
+            rustup run nightly cargo --version --verbose
+            rustup run nightly cargo build
+      # - run:
+      #     name: Stable Build
+      #     command: |
+      #       rustup run stable rustc --version --verbose
+      #       rustup run stable cargo --version --verbose
+      #       rustup run stable cargo build
+      - run:
+          name: Test
+          command: rustup run nightly cargo test
+      - run:
+          name: Upload Coverage
+          command: |
+            .scripts/codecov.sh
+      - save_cache:
+          key: project-cache
+          paths:
+            - "~/.cargo"
+            - "./target"

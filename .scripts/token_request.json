@@ -1,0 +1,11 @@
+{
+  "iss": "http://localhost:8080/mock",
+  "sub": "CgVhZG1pbhIFbG9jYWw",
+  "aud": "cafienne-ui",
+  "exp": 1576568495,
+  "iat": 1576482095,
+  "at_hash": "zqKhL-sV6TNJUFQSF7PwLQ",
+  "email": "admin@example.com",
+  "email_verified": true,
+  "name": "admin"
+}

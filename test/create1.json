@@ -1,0 +1,10 @@
+{
+  "schemas": ["urn:ietf:params:scim:schemas:extension:nleducation:1.0:eduuser"],
+  "eckId": "user3eck-updated",
+  "externalId": "user3externalid",
+  "name": {
+                 "givenName": "GivenName3",
+                 "familyName": "FamilyName3"
+
+  }
+}
