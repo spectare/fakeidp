@@ -1,6 +1,6 @@
 version: 2.1
-orbs:
-  codecov: codecov/codecov@1.0.2
+#orbs:
+#  codecov: codecov/codecov@1.0.5
 jobs:
   build:
     docker:
@@ -15,6 +15,17 @@ jobs:
       - checkout
       - restore_cache:
           key: project-cache
+      - run:
+          name: Install KCOV
+          command: |
+          export KCOV_VERSION=37
+          wget https://github.com/SimonKagstrom/kcov/archive/v$KCOV_VERSION.tar.gz && \
+              tar xzf v$KCOV_VERSION.tar.gz && \
+              rm v$KCOV_VERSION.tar.gz && \
+              cd kcov-$KCOV_VERSION && \
+              mkdir build && cd build && \
+              cmake .. && make && make install && \
+              cd ../.. && rm -rf kcov-$KCOV_VERSION
       - run:
           name: Stable Build
           command: |
