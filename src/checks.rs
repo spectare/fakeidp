@@ -14,22 +14,21 @@ struct HealthResponse {
      */
     pub status: &'static str,
     pub total_memory: Option<String>,
-    pub used_memory: Option<String>
+    pub used_memory: Option<String>,
 }
 
 pub async fn check() -> Result<HttpResponse, Error> {
-        let mut system = sysinfo::System::new();
-        system.refresh_all();
+    let mut system = sysinfo::System::new();
+    system.refresh_all();
 
-        let response = HealthResponse {
-          status : "OK",
-          total_memory : Some(system.get_total_memory().to_string()),
-          used_memory : Some(system.get_used_memory().to_string())
-        };
+    let response = HealthResponse {
+        status: "OK",
+        total_memory: Some(system.get_total_memory().to_string()),
+        used_memory: Some(system.get_used_memory().to_string()),
+    };
 
-        Ok(HttpResponse::Ok().json(response))
+    Ok(HttpResponse::Ok().json(response))
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -43,8 +42,7 @@ mod tests {
     #[actix_rt::test]
     async fn test_route_check() -> Result<(), Error> {
         let mut app = test::init_service(
-        App::new()
-                .service(web::resource("/health").route(web::get().to(check))),
+            App::new().service(web::resource("/health").route(web::get().to(check))),
         )
         .await;
 
@@ -56,12 +54,12 @@ mod tests {
         let resp = app.call(count1_request).await.unwrap();
 
         assert_eq!(resp.status(), http::StatusCode::OK);
-    
+
         let response_body = match resp.response().body().as_ref() {
             Some(actix_web::body::Body::Bytes(bytes)) => bytes,
             _ => panic!("Response error"),
         };
-    
+
         let body_str = match str::from_utf8(&response_body) {
             Ok(v) => v,
             Err(_e) => "Error with parsing result from bytes to string",
@@ -74,5 +72,4 @@ mod tests {
 
         Ok(())
     }
-
 }
