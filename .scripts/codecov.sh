@@ -1,6 +1,6 @@
 #!/bin/bash
 
-REPORT=$(find target/debug -maxdepth 1 -name 'oidc-token-mock*' -a ! -name '*.d')
+REPORT=$(find target/debug -maxdepth 1 -name 'oidc-token-test-service*' -a ! -name '*.d')
 
 for file in $REPORT; do
     mkdir -p "target/cov/$(basename $file)"
