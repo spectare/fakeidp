@@ -1,33 +1,43 @@
-version: 2.1
-#orbs:
-#  codecov: codecov/codecov@1.0.5
-jobs:
-  build:
-    docker:
-      - image: spectare/rust-build:latest
+workflows:
+  version: 2.1
+  #orbs:
+  #  codecov: codecov/codecov@1.0.5
+  docker-workflow:
+    jobs:
+      build:
+        context: DOCKER
+        docker:
+          - image: spectare/rust-build:latest
 
-    environment:
-      # Set your codecov token if your repository is private.
-      CODECOV_TOKEN: "ab1ebf03-ceaa-44e5-a5c3-991540225856" 
-      TZ: "/usr/share/zoneinfo/Europe/Paris"
+        environment:
+          # Set your codecov token if your repository is private.
+          CODECOV_TOKEN: "ab1ebf03-ceaa-44e5-a5c3-991540225856" 
+          TZ: "/usr/share/zoneinfo/Europe/Paris"
 
-    steps:
-      - checkout
-      - restore_cache:
-          key: project-cache
-      - run:
-          name: Stable Build
-          command: |
-            cargo build
-      - run:
-          name: Test
-          command: cargo test
-      - run:
-          name: Upload Coverage
-          command: |
-            .scripts/codecov.sh
-      - save_cache:
-          key: project-cache
-          paths:
-            - "~/.cargo"
-            - "./target"
+        steps:
+          - checkout
+          - restore_cache:
+              key: project-cache
+          - run:
+              name: Stable Build
+              command: |
+                cargo build
+          - run:
+              name: Test
+              command: cargo test
+          - run:
+              name: Upload Coverage
+              command: |
+                .scripts/codecov.sh
+          - setup_remote_docker:
+            docker_layer_caching: true    
+          - run: |
+            TAG=0.1.$CIRCLE_BUILD_NUM
+            docker build -t spectare/oidc-token-test-service:$TAG .
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push spectare/oidc-token-test-service:$TAG
+          - save_cache:
+              key: project-cache
+              paths:
+                - "~/.cargo"
+                - "./target"
