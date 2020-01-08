@@ -17,12 +17,10 @@ jobs:
       - run:
           name: Stable Build
           command: |
-            rustup run stable rustc --version --verbose                                                                
-            rustup run stable cargo --version --verbose       
-            rustup run stable cargo build
+            cargo build
       - run:
           name: Test
-          command: rustup run stable cargo test
+          command: cargo test
       - run:
           name: Upload Coverage
           command: |
