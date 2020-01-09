@@ -40,9 +40,14 @@
         - run: 
             name: Docker build and push
             command: |
-              echo "$DOCKER_USER $DOCKER_PASS"
-              TAG=0.1.$CIRCLE_BUILD_NUM
-              docker build -t spectare/oidc-token-test-service:$TAG -t spectare/oidc-token-test-service:latest .
+            echo `git describe --tags --exact-match` > /tmp/version.txt
+              TAG=$(cat /tmp/version.txt)
+              docker build \
+                -t spectare/oidc-token-test-service:$TAG \
+                -t spectare/oidc-token-test-service:latest \
+                --build-arg VERSION=$(cat /tmp/version.txt) \
+                --build-arg COMMITID=${CIRCLE_SHA1} \
+                .
               echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
               docker push spectare/oidc-token-test-service:$TAG
 
