@@ -40,7 +40,7 @@
         - run: 
             name: Docker build and push
             command: |
-            echo `git describe --tags --exact-match` > /tmp/version.txt
+              echo `git describe --tags --exact-match` > /tmp/version.txt
               TAG=$(cat /tmp/version.txt)
               docker build \
                 -t spectare/oidc-token-test-service:$TAG \
