@@ -3,7 +3,6 @@
   #  codecov: codecov/codecov@1.0.5
   #docker-workflow:
   jobs:
-    context: DOCKER
     build:
       docker:
         - image: spectare/rust-build:latest
@@ -41,6 +40,7 @@
         - run: 
             name: Docker build and push
             command: |
+              echo "$DOCKER_USER $DOCKER_PASS"
               TAG=0.1.$CIRCLE_BUILD_NUM
               docker build -t spectare/oidc-token-test-service:$TAG -t spectare/oidc-token-test-service:latest .
               echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
@@ -52,6 +52,7 @@
       jobs:
         - build
         - publish-docker:
+            context: DOCKER
             requires:
               - build
             filters:
