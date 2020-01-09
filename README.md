@@ -5,9 +5,27 @@ to generate JWT tokens based on the claims you like to receive.
 
 Example
 
-'''
-curl example here
-'''
+
+The service runs by default on port 8080 and in order to generate a token, you post the required claimset 
+to the /token endpoint
+
+```bash
+curl -d "@claim.json" -X POST http://`hostname -f`:8080/token
+```
+where claim.json contains the claimset:
+```json
+{
+  "iss": "http://localhost:8080/mock",
+  "sub": "CgVhZG1pbhIFbG9jYWw",
+  "aud": "cafienne-ui",
+  "exp": 1576568495,
+  "iat": 1576482095,
+  "at_hash": "zqKhL-sV6TNJUFQSF7PwLQ",
+  "email": "admin@example.com",
+  "email_verified": true,
+  "name": "admin"
+}
+```
 
 #Generate keys
 
