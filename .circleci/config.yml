@@ -33,7 +33,22 @@
               - "~/.cargo"
               - "./target"
     
-    publish-docker:
+    publish-docker-latest:
+      machine: true
+      steps:
+        - checkout
+        - run: 
+            name: Docker build and push
+            command: |
+              docker build \
+                -t spectare/oidc-token-test-service:latest \
+                --build-arg VERSION=$(cat /tmp/version.txt) \
+                --build-arg COMMITID=${CIRCLE_SHA1} \
+                .
+              echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+              docker push spectare/oidc-token-test-service:latest
+    
+    publish-docker-release:
       machine: true
       steps:
         - checkout
@@ -44,22 +59,24 @@
               TAG=$(cat /tmp/version.txt)
               docker build \
                 -t spectare/oidc-token-test-service:$TAG \
-                -t spectare/oidc-token-test-service:latest \
                 --build-arg VERSION=$(cat /tmp/version.txt) \
                 --build-arg COMMITID=${CIRCLE_SHA1} \
                 .
               echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
               docker push spectare/oidc-token-test-service:$TAG
+          
 
   workflows:
     version: 2
     ci:
       jobs:
         - build
-        - publish-docker:
+        - publish-docker-latest:
             context: DOCKER
             requires:
               - build
             filters:
               branches:
                 only: master
+        - publish-docker-release:
+            context: DOCKER
