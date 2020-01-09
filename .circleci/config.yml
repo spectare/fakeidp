@@ -83,3 +83,5 @@
             filters:
               tags:
                 only: /.*/
+              branches:
+                ignore: /.*/
