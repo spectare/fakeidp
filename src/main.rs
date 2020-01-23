@@ -30,7 +30,7 @@ Profiling: http://carol-nichols.com/2015/12/09/rust-profiling-on-osx-cpu-time/
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     let args = clap::App::new("oidc-token-test-service")
-        .version("0.1")
+        .version("0.2")
         .about("Allows to generate any valid JWT for OIDC")
         .arg(
             clap::Arg::with_name("keyfile")
