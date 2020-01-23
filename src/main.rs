@@ -38,6 +38,18 @@ async fn main() -> std::io::Result<()> {
                 .required(false)
                 .index(1),
         )
+        .arg(clap::Arg::with_name("port")
+                .short("p")
+                .long("port")
+                .value_name("port")
+                .help("Sets the port to listen to")
+                .default_value("8080"))
+        .arg(clap::Arg::with_name("bind")
+                .short("b")
+                .long("bind")
+                .value_name("bind")
+                .help("Sets the host or IP number to bind to")
+                .default_value("0.0.0.0"))
         .get_matches();
 
     let keyfile = args
@@ -45,12 +57,14 @@ async fn main() -> std::io::Result<()> {
         .unwrap_or("./static/private_key.der")
         .to_owned();
 
+    let bind = format!("{}:{}", args.value_of("bind").unwrap(), args.value_of("port").unwrap());
+
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
 
     let mut user = String::from_utf8(Command::new("whoami").output().unwrap().stdout).unwrap();
     user.pop();
-    println!("Starting oidc mock endpoint on 8080 as user {}!", user);
+    println!("Mock OIDC endpoint bound to {} as user {}!", bind, user);
 
     //Start the service with some users inside
     HttpServer::new(move || {
@@ -66,7 +80,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::resource("/keys").route(web::get().to(discovery::keys)))
             .service(web::resource("/health").route(web::get().to(checks::check)))
     })
-    .bind("0.0.0.0:8080")?
+    .bind(bind)?
     .run()
     .await
 }
