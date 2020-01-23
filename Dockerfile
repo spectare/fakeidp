@@ -44,6 +44,12 @@ COPY --from=cargo-build /usr/src/oidc-token-test-service/static/private_key.der 
 
 RUN chown runtme:runtme /usr/local/bin/oidc-token-test-service
 
+RUN chown runtme:runtme /usr/local/etc/private_key.der
+
 USER runtme
 
-CMD ["oidc-token-test-service", "/usr/local/etc/private_key.der"]
+ENV BIND "0.0.0.0"
+
+ENV PORT "8080"
+
+CMD ["sh", "-c", "oidc-token-test-service /usr/local/etc/private_key.der -p ${PORT} -b ${BIND}"]
