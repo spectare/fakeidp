@@ -30,12 +30,20 @@ ARGS:
 
 The mock service makes use of DER encoded key files. The easiest way to generate these are the openssl tool
 
+```
+openssl genpkey -algorithm RSA \
+                -pkeyopt rsa_keygen_bits:2048 \
+                -outform der \
+                -out private_key.der
+```
+
 
 ### The other option is to run it as a DOCKER container:
 
 ```bash
 docker run -p9090:8080 -e BIND=0.0.0.0 -e PORT=9090 spectare/oidc-token-test-service:latest
 ```
+
 where BIND and PORT are environment variables that allow you to change the endpoint binding and address within the container. 
 Note that you need to expose the port you choose. 
 
