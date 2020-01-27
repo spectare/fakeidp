@@ -4,6 +4,7 @@
   #docker-workflow:
   jobs:
     build:
+      machine: true
       docker:
         - image: spectare/rust-build:latest
 
