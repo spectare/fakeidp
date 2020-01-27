@@ -48,8 +48,8 @@ RUN chown runtme:runtme /usr/local/etc/private_key.der
 
 USER runtme
 
-ENV BIND "0.0.0.0"
+ENV BIND="0.0.0.0"
 
-ENV PORT "8080"
+ENV PORT="8080"
 
 CMD ["sh", "-c", "oidc-token-test-service /usr/local/etc/private_key.der -p ${PORT} -b ${BIND}"]
