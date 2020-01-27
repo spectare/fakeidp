@@ -5,7 +5,7 @@
   jobs:
     build:
       docker:
-        - image: spectare/rust-build:latest
+        - image: datenstrom/rust-codecov:stable 
 
       environment:
         # Set your codecov token if your repository is private.
@@ -22,7 +22,7 @@
               cargo build
         - run:
             name: Test
-            command: cargo test
+            command: cargo test --verbose --jobs 1 --all
         - run:
             name: Upload Coverage
             command: |
