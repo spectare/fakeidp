@@ -5,7 +5,7 @@
   jobs:
     build:
       docker:
-        - image: datenstrom/rust-codecov:stable 
+        - image: spectare/rust-build:latest
 
       environment:
         # Set your codecov token if your repository is private.
