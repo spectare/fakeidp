@@ -83,7 +83,7 @@
               - build
             filters:
               branches:
-                only: master
+                only: main
         - publish-docker-release:
             context: DOCKER
             filters:
