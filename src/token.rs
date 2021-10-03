@@ -59,7 +59,7 @@ pub async fn create_token(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::dev::Service;
+    use actix_web::body::AnyBody;
     use actix_web::{http, test, web, App};
     use std::str;
 
@@ -79,9 +79,9 @@ mod tests {
             }
         "##;
 
-        let mut app = test::init_service(
+        let app = test::init_service(
             App::new()
-                .data(AppState::new("./static/private_key.der"))
+                .app_data(web::Data::new(AppState::new("./static/private_key.der")))
                 .service(web::resource("/").route(web::post().to(create_token))),
         )
         .await;
@@ -91,12 +91,12 @@ mod tests {
             .set_payload(claims)
             .to_request();
 
-        let resp = app.call(req).await.unwrap();
+        let resp = test::call_service(&app, req).await;
 
         assert_eq!(resp.status(), http::StatusCode::OK);
 
-        let response_body = match resp.response().body().as_ref() {
-            Some(actix_web::body::Body::Bytes(bytes)) => bytes,
+        let response_body = match resp.response().body() {
+            AnyBody::Bytes(bytes) => bytes,
             _ => panic!("Response error"),
         };
 

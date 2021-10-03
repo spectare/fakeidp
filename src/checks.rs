@@ -23,8 +23,8 @@ pub async fn check() -> Result<HttpResponse, Error> {
 
     let response = HealthResponse {
         status: "OK",
-        total_memory: Some(system.get_total_memory().to_string()),
-        used_memory: Some(system.get_used_memory().to_string()),
+        total_memory: Some(system.total_memory().to_string()),
+        used_memory: Some(system.used_memory().to_string()),
     };
 
     Ok(HttpResponse::Ok().json(response))
@@ -33,6 +33,7 @@ pub async fn check() -> Result<HttpResponse, Error> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use actix_web::body::AnyBody;
     use actix_web::dev::Service;
     use actix_web::{http, test, web, App};
     use serde_json::json;
@@ -41,22 +42,22 @@ mod tests {
 
     #[actix_rt::test]
     async fn test_route_check() -> Result<(), Error> {
-        let mut app = test::init_service(
+        let app = test::init_service(
             App::new().service(web::resource("/health").route(web::get().to(check))),
         )
         .await;
 
         let count1_request = test::TestRequest::get()
             .uri("/health")
-            .header("Content-Type", "application/json")
+            .insert_header(("Content-Type", "application/json"))
             .to_request();
 
         let resp = app.call(count1_request).await.unwrap();
 
         assert_eq!(resp.status(), http::StatusCode::OK);
 
-        let response_body = match resp.response().body().as_ref() {
-            Some(actix_web::body::Body::Bytes(bytes)) => bytes,
+        let response_body = match resp.response().body() {
+            AnyBody::Bytes(bytes) => bytes,
             _ => panic!("Response error"),
         };
 

@@ -1,6 +1,3 @@
-//#![feature(alloc_system)]
-//extern crate alloc_system;
-
 use actix_web::{middleware, web, App, HttpServer};
 use biscuit::jws::Secret;
 use clap;
@@ -38,18 +35,22 @@ async fn main() -> std::io::Result<()> {
                 .required(false)
                 .index(1),
         )
-        .arg(clap::Arg::with_name("port")
+        .arg(
+            clap::Arg::with_name("port")
                 .short("p")
                 .long("port")
                 .value_name("port")
                 .help("Sets the port to listen to")
-                .default_value("8080"))
-        .arg(clap::Arg::with_name("bind")
+                .default_value("8080"),
+        )
+        .arg(
+            clap::Arg::with_name("bind")
                 .short("b")
                 .long("bind")
                 .value_name("bind")
                 .help("Sets the host or IP number to bind to")
-                .default_value("0.0.0.0"))
+                .default_value("0.0.0.0"),
+        )
         .get_matches();
 
     let keyfile = args
@@ -57,7 +58,11 @@ async fn main() -> std::io::Result<()> {
         .unwrap_or("./static/private_key.der")
         .to_owned();
 
-    let bind = format!("{}:{}", args.value_of("bind").unwrap(), args.value_of("port").unwrap());
+    let bind = format!(
+        "{}:{}",
+        args.value_of("bind").unwrap(),
+        args.value_of("port").unwrap()
+    );
 
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
@@ -70,8 +75,8 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(middleware::Logger::default())
-            .data(web::JsonConfig::default().limit(4096))
-            .data(AppState::new(&keyfile))
+            .app_data(web::Data::new(web::JsonConfig::default().limit(4096)))
+            .app_data(web::Data::new(AppState::new(&keyfile)))
             .service(web::resource("/token").route(web::post().to(token::create_token)))
             .service(
                 web::resource("/.well-known/openid-configuration")
