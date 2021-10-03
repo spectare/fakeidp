@@ -5,7 +5,7 @@
   jobs:
     build:
       docker:
-        - image: spectare/rust-build:latest
+        - image: cimg/rust:1.55.0
 
       environment:
         # Set your codecov token if your repository is private.
@@ -34,9 +34,12 @@
               - "./target"
     
     publish-docker-latest:
-      machine: true
+      docker:
+        - image: cimg/rust:1.55.0
       steps:
         - checkout
+        - setup_remote_docker:
+          version: 20.10.7
         - run: 
             name: Docker build and push
             command: |
@@ -49,9 +52,12 @@
               docker push spectare/oidc-token-test-service:latest
     
     publish-docker-release:
-      machine: true
+      docker:
+        - image: cimg/rust:1.55.0
       steps:
         - checkout
+        - setup_remote_docker:
+          version: 20.10.7
         - run: 
             name: Docker build and push
             command: |
