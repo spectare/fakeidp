@@ -10,13 +10,15 @@ mod token;
 //AppState object is initialized for the App and passed with every request that has a parameter with the AppState as type.
 pub struct AppState {
     rsa_key_pair: biscuit::jws::Secret,
+    exposed_host: String,
 }
 
 impl AppState {
-    pub fn new(private_key_location: &str) -> Self {
+    pub fn new(private_key_location: &str, exposed_host: String) -> Self {
         Self {
             rsa_key_pair: Secret::rsa_keypair_from_file(private_key_location)
                 .expect("Cannot read RSA keypair"),
+            exposed_host: exposed_host.clone(),
         }
     }
 }
@@ -51,6 +53,14 @@ async fn main() -> std::io::Result<()> {
                 .help("Sets the host or IP number to bind to")
                 .default_value("0.0.0.0"),
         )
+        .arg(
+            clap::Arg::with_name("host")
+                .short("h")
+                .long("host")
+                .value_name("exposed_host")
+                .help("Full base URL of the host the service is found, like https://accounts.google.com")
+                .default_value("http://localhost:8080"),
+        )
         .get_matches();
 
     let keyfile = args
@@ -58,11 +68,11 @@ async fn main() -> std::io::Result<()> {
         .unwrap_or("./static/private_key.der")
         .to_owned();
 
-    let bind = format!(
-        "{}:{}",
-        args.value_of("bind").unwrap(),
-        args.value_of("port").unwrap()
-    );
+    let bind_host = args.value_of("bind").unwrap();
+    let bind_port = args.value_of("port").unwrap();
+    let exposed_host = args.value_of("host").unwrap().to_string();
+
+    let bind = format!("{}:{}", bind_host, bind_port);
 
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
@@ -76,7 +86,10 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(middleware::Logger::default())
             .app_data(web::Data::new(web::JsonConfig::default().limit(4096)))
-            .app_data(web::Data::new(AppState::new(&keyfile)))
+            .app_data(web::Data::new(AppState::new(
+                &keyfile,
+                exposed_host.clone(),
+            )))
             .service(web::resource("/token").route(web::post().to(token::create_token)))
             .service(
                 web::resource("/.well-known/openid-configuration")
@@ -93,10 +106,10 @@ async fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
     fn test_create_appstate() {
-        let _app_state = AppState::new("./static/private_key.der");
+        let exposed_host = "http://localhost:8080".to_string();
+        let _app_state = AppState::new("./static/private_key.der", exposed_host);
     }
 
     #[test]
@@ -104,6 +117,7 @@ mod tests {
         expected = "Cannot read RSA keypair: IOError(Os { code: 2, kind: NotFound, message: \"No such file or directory\" })"
     )]
     fn test_create_appstate_not_found_file() {
-        let _app_state = AppState::new("./does_not_exist");
+        let exposed_host = "http://localhost:8080".to_string();
+        let _app_state = AppState::new("./does_not_exist", exposed_host);
     }
 }
