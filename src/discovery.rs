@@ -6,9 +6,9 @@ use biscuit::jwk::*;
 use biscuit::jws::Secret;
 use biscuit::Empty;
 use num::BigUint;
-// use num_bigint::BigUint;
 use ring::signature::KeyPair;
 use serde_json::json;
+use std::format;
 
 pub async fn keys(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
   let rsa_key = &state.rsa_key_pair;
@@ -42,13 +42,12 @@ pub async fn keys(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
   Ok(HttpResponse::Ok().json(jwk_set))
 }
 
-pub async fn openid_configuration(_state: web::Data<AppState>) -> Result<HttpResponse, Error> {
+pub async fn openid_configuration(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
   let keys_response = json!( {
-    "issuer": "http://localhost:8080/",
-    "authorization_endpoint": "http://localhost:8080/auth",
-    "token_endpoint": "http://localhost:8080/token",
-    "jwks_uri": "http://localhost:8080/keys",
-    "userinfo_endpoint": "http://localhost:8080/userinfo",
+    "issuer": format!("{}", state.exposed_host),
+    "token_endpoint": format!("{}/token", state.exposed_host),
+    "jwks_uri": format!("{}/keys", state.exposed_host),
+    "userinfo_endpoint": format!("{}/userinfo", state.exposed_host),
     "response_types_supported": [
       "code",
       "id_token",
@@ -96,9 +95,14 @@ mod tests {
 
   #[actix_rt::test]
   async fn test_route_keys() -> Result<(), Error> {
+    let exposed_host = "http://localhost:8080".to_string();
+
     let app = test::init_service(
       App::new()
-        .app_data(web::Data::new(AppState::new("./static/private_key.der")))
+        .app_data(web::Data::new(AppState::new(
+          "./static/private_key.der",
+          exposed_host,
+        )))
         .service(web::resource("/").route(web::get().to(keys))),
     )
     .await;

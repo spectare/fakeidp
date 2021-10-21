@@ -25,6 +25,7 @@ pub async fn create_token(
             let decoded_token = JWT::new_decoded(
                 From::from(RegisteredHeader {
                     algorithm: SignatureAlgorithm::RS256,
+                    key_id: Some("2020-01-29".to_string()),
                     ..Default::default()
                 }),
                 ClaimsSet::<Value> {
@@ -79,9 +80,13 @@ mod tests {
             }
         "##;
 
+        let exposed_host = "http://localhost:8080".to_string();
         let app = test::init_service(
             App::new()
-                .app_data(web::Data::new(AppState::new("./static/private_key.der")))
+                .app_data(web::Data::new(AppState::new(
+                    "./static/private_key.der",
+                    exposed_host,
+                )))
                 .service(web::resource("/").route(web::post().to(create_token))),
         )
         .await;
@@ -105,7 +110,7 @@ mod tests {
             Err(_e) => "Error with parsing result from bytes to string",
         };
 
-        assert_eq!(body_str, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvbW9jayIsInN1YiI6IkNnVmhaRzFwYmhJRmJHOWpZV3ciLCJhdWQiOiJjYWZpZW5uZS11aSIsImV4cCI6MTU3NjU2ODQ5NSwiaWF0IjoxNTc2NDgyMDk1LCJhdF9oYXNoIjoienFLaEwtc1Y2VE5KVUZRU0Y3UHdMUSIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6ImFkbWluIn0.hMp7HYL_nlsnf_Q1XFDWo_dbwFfdSg70yK9BHzN_nykregJ7oa2GVPT9VlrjrfncH4YJwBs9fMSRxAEXa3lfXLHLcZFrd6r4Kxhfrsl9vFmuIxlbJJhJj-_0uDnyVRatMlMHfnJsJZCqKIeE6BB2xopdgyGsNuhHx1bxXGb-Ty5Da0OCHIdCgpTfxzrtPDs87saT0i-4ohBbCIKeA0Smxu3wHFQaLH1qWO5vvsW_bAT35agHgO7rIGkK0Bf-hMba3RUe3R4VQA7Pgr56CzwZnhMpiJNeISdQTUZss8P5QovG_4SUIWTb6ybioyMFwXMiTWb3oWXWwX5yZnvTRM-khA");
+        assert_eq!(body_str, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjIwMjAtMDEtMjkifQ.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvbW9jayIsInN1YiI6IkNnVmhaRzFwYmhJRmJHOWpZV3ciLCJhdWQiOiJjYWZpZW5uZS11aSIsImV4cCI6MTU3NjU2ODQ5NSwiaWF0IjoxNTc2NDgyMDk1LCJhdF9oYXNoIjoienFLaEwtc1Y2VE5KVUZRU0Y3UHdMUSIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwibmFtZSI6ImFkbWluIn0.KxJNef8u8N8t7CfHSiha4yFpiivRGcR_zmNNAN9CJGBGuX5i0h9cYw1AGupNvBe5VEQTpp_hk3_S5lJE8qTw60ey9zUfbbiMX3uWUUsqNVcCv51kF5hzPA0eQffZMpMRBSzJa1WgY39yQATy2eBoDEt_JPXixGOy6Xl9Op9VoDozFyVYtG31oUSM4rFhSqTAYFrRfXIdrYIaBkcqd5FFRRidSb6mSgZwl9YT5gCr2LF7fLAePqAEJqiQP3weOJNytv52OMRMjosmO6bnQQvNx6Hq7M3o6n-nfWa8SE7GlvV4MJ8b-HR8n6xQ4EZYZ09hBM2HYlS1CqpAjHs0OM3z9g");
 
         Ok(())
     }
