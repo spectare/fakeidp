@@ -57,7 +57,7 @@ async fn main() -> std::io::Result<()> {
             clap::Arg::with_name("host")
                 .short("h")
                 .long("host")
-                .value_name("exposed_host")
+                .value_name("host")
                 .help("Full base URL of the host the service is found, like https://accounts.google.com")
                 .default_value("http://localhost:8080"),
         )
