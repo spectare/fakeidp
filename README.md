@@ -45,7 +45,7 @@ Note that a keypair is provided by default.
 ### The other option is to run it as a DOCKER container:
 
 ```bash
-docker run -p9090:8080 -e BIND=0.0.0.0 -e PORT=9090 -e EXPOSED_HOST=http://localhost:8080 spectare/oidc-token-test-service:latest
+docker run -p9090:9090 -e BIND=0.0.0.0 -e PORT=9090 -e EXPOSED_HOST=http://localhost:9090 spectare/oidc-token-test-service:latest
 ```
 
 where BIND and PORT are environment variables that allow you to change the endpoint binding and address within the container. 
@@ -59,7 +59,7 @@ The service runs by default on port 8080 and in order to generate a token, you p
 to the /token endpoint
 
 ```bash
-curl -d "@claim.json" -X POST http://`hostname -f`:8080/token
+curl -d "@claim.json" -X POST http://`hostname -f`:9090/token
 ```
 where claim.json contains the claimset:
 ```json
