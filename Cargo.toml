@@ -16,11 +16,11 @@ chrono = "0.4.10"
 clap = "2.33.3"
 der-parser = "6.0.0"
 env_logger = "0.9.0"
-futures = "0.3.15"
+futures = "0.3.18"
 futures-core = {version = "0.3.7", default-features = false, features = ["alloc"]}
 futures-util = {version = "0.3.7", default-features = false, features = ["alloc"]}
 num = "0.3.1"
-tokio = {version = "1.6.0", features = ["full"]}
+tokio = {version = "1.14.0", features = ["full"]}
 # futures = "0.3.1"
 nanoid = "0.4.0"
 # num-bigint = "0.4.2"
