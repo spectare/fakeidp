@@ -85,16 +85,15 @@ dependencies = [
 
 [[package]]
 name = "actix-multipart"
-version = "0.4.0-beta.8"
+version = "0.4.0-beta.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64b9a2bada994f9a85a6b705cfb02cbc422d53ccf4176b4b20623f8a7c181873"
+checksum = "ae01eeef2fdfd9df63d5124e35ff0968988cb0a2f24460ff005425de903d4f4f"
 dependencies = [
  "actix-utils",
  "actix-web",
  "bytes",
  "derive_more",
  "futures-core",
- "futures-util",
  "httparse",
  "local-waker",
  "log",
