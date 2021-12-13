@@ -60,7 +60,6 @@ pub async fn create_token(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::body::AnyBody;
     use actix_web::{http, test, web, App};
     use std::str;
 
@@ -100,11 +99,7 @@ mod tests {
 
         assert_eq!(resp.status(), http::StatusCode::OK);
 
-        let response_body = match resp.response().body() {
-            AnyBody::Bytes(bytes) => bytes,
-            _ => panic!("Response error"),
-        };
-
+        let response_body = test::read_body(resp).await;
         let body_str = match str::from_utf8(&response_body) {
             Ok(v) => v,
             Err(_e) => "Error with parsing result from bytes to string",

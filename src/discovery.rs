@@ -87,7 +87,6 @@ pub async fn openid_configuration(state: web::Data<AppState>) -> Result<HttpResp
 #[cfg(test)]
 mod tests {
   use super::*;
-  use actix_web::body::AnyBody;
   use actix_web::{http, test, web, App};
   use serde_json::json;
   use serde_json::Value;
@@ -110,19 +109,12 @@ mod tests {
     let req = test::TestRequest::get().uri("/").to_request();
 
     let resp = test::call_service(&app, req).await;
-
-    let response_body = match resp.response().body() {
-      AnyBody::Bytes(bytes) => bytes,
-      _ => panic!("Response error"),
-    };
-
+    assert_eq!(resp.status(), http::StatusCode::OK);
+    let response_body = test::read_body(resp).await;
     let body_str = match str::from_utf8(&response_body) {
       Ok(v) => v,
       Err(_e) => "Error with parsing result from bytes to string",
     };
-
-    println!("Body : {:?}", body_str);
-    assert_eq!(resp.status(), http::StatusCode::OK);
 
     let p: Value = serde_json::from_str(body_str).unwrap();
     println!("Value : {:?}", p);
