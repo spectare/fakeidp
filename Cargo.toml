@@ -5,7 +5,7 @@ name = "oidc-token-test-service"
 version = "0.2.0"
 
 [dependencies]
-actix-cors = "0.6.0-beta.7"
+actix-cors = "0.6.0-beta.8"
 actix-multipart = "0.4.0-beta.10"
 actix-rt = "2.5.0"
 actix-service = "2.0.2"
