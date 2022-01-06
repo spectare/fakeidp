@@ -5,7 +5,7 @@
   jobs:
     build:
       docker:
-        - image: cimg/rust:1.55.0
+        - image: cimg/rust:1.57.0
 
       environment:
         # Set your codecov token if your repository is private.
@@ -35,7 +35,7 @@
     
     publish-docker-latest:
       docker:
-        - image: cimg/rust:1.55.0
+        - image: cimg/rust:1.57.0
       steps:
         - checkout
         - setup_remote_docker:
@@ -53,7 +53,7 @@
     
     publish-docker-release:
       docker:
-        - image: cimg/rust:1.55.0
+        - image: cimg/rust:1.57.0
       steps:
         - checkout
         - setup_remote_docker:
