@@ -16,7 +16,7 @@ chrono = "0.4.10"
 clap = "2.34.0"
 der-parser = "6.0.1"
 env_logger = "0.9.0"
-futures = "0.3.19"
+futures = "0.3.21"
 futures-core = {version = "0.3.21", default-features = false, features = ["alloc"]}
 futures-util = {version = "0.3.19", default-features = false, features = ["alloc"]}
 num = "0.3.1"
