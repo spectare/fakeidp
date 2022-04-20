@@ -273,9 +273,9 @@ checksum = "d7b8a9123b8027467bce0099fe556c628a53c8d83df0507084c31e9ba2e39aff"
 
 [[package]]
 name = "asn1-rs"
-version = "0.3.1"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30ff05a702273012438132f449575dbc804e27b2f3cbe3069aa237d26c98fa33"
+checksum = "431d469cbf4174f7e5bf7d13caa526ce2d7d8eb90a15ddce7f0960de0f1855ac"
 dependencies = [
  "asn1-rs-derive",
  "asn1-rs-impl",
@@ -288,9 +288,9 @@ dependencies = [
 
 [[package]]
 name = "asn1-rs-derive"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db8b7511298d5b7784b40b092d9e9dcd3a627a5707e4b5e507931ab0d44eeebf"
+checksum = "2db16f2b6a2e444bed561ef4d11bb874e50754ace97af5e352dcd6da93de6247"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -555,9 +555,9 @@ checksum = "3ee2393c4a91429dffb4bedf19f4d6abf27d8a732c8ce4980305d782e5426d57"
 
 [[package]]
 name = "der-parser"
-version = "7.0.0"
+version = "8.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe398ac75057914d7d07307bf67dc7f3f574a26783b4fc7805a20ffa9f506e82"
+checksum = "67ea9925e3c2f07a86111cebe23d6cce787a38b7062ce58facdebec8b56843f3"
 dependencies = [
  "asn1-rs",
  "displaydoc",
