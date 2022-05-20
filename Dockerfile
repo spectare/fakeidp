@@ -2,7 +2,7 @@
 # Cargo Build Stage
 # ------------------------------------------------------------------------------
 
-FROM rust:1.60.0-buster as cargo-build
+FROM rust:1.61.0-buster as cargo-build
 
 RUN apt-get update
 
