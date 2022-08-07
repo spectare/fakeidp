@@ -1243,7 +1243,7 @@ dependencies = [
 
 [[package]]
 name = "oidc-token-test-service"
-version = "0.2.1"
+version = "0.2.4"
 dependencies = [
  "actix-4-jwt-auth",
  "actix-cors",
