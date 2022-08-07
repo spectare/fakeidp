@@ -2,7 +2,7 @@
 authors = ["Olger Warnier <olger@spectare.nl>"]
 edition = "2018"
 name = "oidc-token-test-service"
-version = "0.2.1"
+version = "0.2.4"
 
 [dependencies]
 actix-cors = "0.6.1"
