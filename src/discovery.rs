@@ -12,8 +12,13 @@ use std::format;
 
 pub async fn keys(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
   let rsa_key = &state.rsa_key_pair;
+  let jwk_set = create_jwk_set(rsa_key);
+  Ok(HttpResponse::Ok().json(jwk_set))
+}
 
-  let public_key = match rsa_key {
+
+pub fn create_jwk_set(secret: &Secret) -> JWKSet<Empty> {
+  let public_key = match secret {
     Secret::RsaKeyPair(ring_pair) => {
       let s = ring_pair.clone();
       let pk = s.public_key().clone();
@@ -38,8 +43,7 @@ pub async fn keys(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
       additional: Default::default(),
     }],
   };
-
-  Ok(HttpResponse::Ok().json(jwk_set))
+  jwk_set
 }
 
 pub async fn openid_configuration(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
@@ -95,11 +99,12 @@ mod tests {
   #[actix_rt::test]
   async fn test_route_keys() -> Result<(), Error> {
     let exposed_host = "http://localhost:8080".to_string();
-
+    let rsa_keys = Secret::rsa_keypair_from_file("./static/private_key.der")
+        .expect("Cannot read RSA keypair");
     let app = test::init_service(
       App::new()
         .app_data(web::Data::new(AppState::new(
-          "./static/private_key.der",
+          &rsa_keys,
           exposed_host,
         )))
         .service(web::resource("/").route(web::get().to(keys))),
