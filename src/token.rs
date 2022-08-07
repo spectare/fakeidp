@@ -22,30 +22,7 @@ pub async fn create_token(
     //and private claims with a JSON Value with all passed claims is a bit of a hack.
     res.and_then(|claims| match claims {
         Value::Object(ref _v) => {
-            let decoded_token = JWT::new_decoded(
-                From::from(RegisteredHeader {
-                    algorithm: SignatureAlgorithm::RS256,
-                    key_id: Some("2020-01-29".to_string()),
-                    ..Default::default()
-                }),
-                ClaimsSet::<Value> {
-                    registered: RegisteredClaims {
-                        issuer: None,
-                        subject: None,
-                        audience: None,
-                        not_before: None,
-                        expiry: None,
-                        id: None,
-                        issued_at: None,
-                    },
-                    private: claims,
-                },
-            );
-            let encoded_token = decoded_token
-                .encode(&signing_secret)
-                .unwrap()
-                .unwrap_encoded()
-                .to_string();
+            let encoded_token = create_jwt(&signing_secret, claims);
             Ok(HttpResponse::Ok()
                 .content_type("text/plain")
                 .body(encoded_token))
@@ -55,6 +32,33 @@ pub async fn create_token(
             other
         ))),
     })
+}
+
+pub fn create_jwt(signing_secret: &Secret, claims: Value) -> String {
+    let decoded_token = JWT::new_decoded(
+        From::from(RegisteredHeader {
+            algorithm: SignatureAlgorithm::RS256,
+            key_id: Some("2020-01-29".to_string()),
+            ..Default::default()
+        }),
+        ClaimsSet::<Value> {
+            registered: RegisteredClaims {
+                issuer: None,
+                subject: None,
+                audience: None,
+                not_before: None,
+                expiry: None,
+                id: None,
+                issued_at: None,
+            },
+            private: claims,
+        },
+    );
+    decoded_token
+        .encode(&signing_secret)
+        .unwrap()
+        .unwrap_encoded()
+        .to_string()
 }
 
 #[cfg(test)]
@@ -80,10 +84,12 @@ mod tests {
         "##;
 
         let exposed_host = "http://localhost:8080".to_string();
+        let rsa_keys = Secret::rsa_keypair_from_file("./static/private_key.der")
+            .expect("Cannot read RSA keypair");
         let app = test::init_service(
             App::new()
                 .app_data(web::Data::new(AppState::new(
-                    "./static/private_key.der",
+                    &rsa_keys,
                     exposed_host,
                 )))
                 .service(web::resource("/").route(web::post().to(create_token))),

@@ -2,10 +2,12 @@ use actix_web::{middleware, web, App, HttpServer};
 use biscuit::jws::Secret;
 use clap;
 use std::process::Command;
+use actix_4_jwt_auth::{OIDCValidator, OIDCValidatorConfig};
 
 mod checks;
 mod discovery;
 mod token;
+mod userinfo;
 
 //AppState object is initialized for the App and passed with every request that has a parameter with the AppState as type.
 pub struct AppState {
@@ -13,11 +15,10 @@ pub struct AppState {
     exposed_host: String,
 }
 
-impl AppState {
-    pub fn new(private_key_location: &str, exposed_host: String) -> Self {
+impl AppState  {
+    pub fn new(rsa_keys: &Secret, exposed_host: String) -> Self {
         Self {
-            rsa_key_pair: Secret::rsa_keypair_from_file(private_key_location)
-                .expect("Cannot read RSA keypair"),
+            rsa_key_pair: rsa_keys.clone(),
             exposed_host: exposed_host.clone(),
         }
     }
@@ -39,7 +40,7 @@ async fn main() -> std::io::Result<()> {
         )
         .arg(
             clap::Arg::with_name("port")
-                .short("p")
+                .short('p')
                 .long("port")
                 .value_name("port")
                 .help("Sets the port to listen to")
@@ -47,7 +48,7 @@ async fn main() -> std::io::Result<()> {
         )
         .arg(
             clap::Arg::with_name("bind")
-                .short("b")
+                .short('b')
                 .long("bind")
                 .value_name("bind")
                 .help("Sets the host or IP number to bind to")
@@ -55,7 +56,7 @@ async fn main() -> std::io::Result<()> {
         )
         .arg(
             clap::Arg::with_name("host")
-                .short("h")
+                .short('h')
                 .long("host")
                 .value_name("host")
                 .help("Full base URL of the host the service is found, like https://accounts.google.com")
@@ -80,17 +81,26 @@ async fn main() -> std::io::Result<()> {
     let mut user = String::from_utf8(Command::new("whoami").output().unwrap().stdout).unwrap();
     user.pop();
     println!("Mock OIDC endpoint bound to {} as user {}!", bind, user);
-
+    //let validator = OIDCValidator::new_for_jwks(jwk_set).unwrap();
     //Start the service with some users inside
     HttpServer::new(move || {
+        let rsa_keys = Secret::rsa_keypair_from_file(&keyfile)
+            .expect("Cannot read RSA keypair");
+        let jwk_set = discovery::create_jwk_set(&rsa_keys);
+
         App::new()
             .wrap(middleware::Logger::default())
             .app_data(web::Data::new(web::JsonConfig::default().limit(4096)))
             .app_data(web::Data::new(AppState::new(
-                &keyfile,
+                &rsa_keys,
                 exposed_host.clone(),
             )))
+            .app_data( OIDCValidatorConfig {
+                issuer: "".to_string(),
+                validator: OIDCValidator::new_for_jwks(jwk_set).unwrap(),
+            })
             .service(web::resource("/token").route(web::post().to(token::create_token)))
+            .service(web::resource("/userinfo").route(web::get().to(userinfo::user_info)))
             .service(
                 web::resource("/.well-known/openid-configuration")
                     .route(web::get().to(discovery::openid_configuration)),
@@ -109,15 +119,8 @@ mod tests {
     #[test]
     fn test_create_appstate() {
         let exposed_host = "http://localhost:8080".to_string();
-        let _app_state = AppState::new("./static/private_key.der", exposed_host);
-    }
-
-    #[test]
-    #[should_panic(
-        expected = "Cannot read RSA keypair: IOError(Os { code: 2, kind: NotFound, message: \"No such file or directory\" })"
-    )]
-    fn test_create_appstate_not_found_file() {
-        let exposed_host = "http://localhost:8080".to_string();
-        let _app_state = AppState::new("./does_not_exist", exposed_host);
+        let rsa_keys = Secret::rsa_keypair_from_file("./static/private_key.der")
+            .expect("Cannot read RSA keypair");
+        let _app_state = AppState::new(&rsa_keys, exposed_host);
     }
 }

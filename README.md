@@ -52,7 +52,7 @@ where BIND and PORT are environment variables that allow you to change the endpo
 Note that you need to expose the port you choose and match that with the exposed host name/port.
 EXPOSED_HOST is  the base URL used by the outside world to find the ./well-known/openid-configuration and the keys. 
 
-## Example
+## Example for JWT token creation
 
 
 The service runs by default on port 8080 and in order to generate a token, you post the required claimset 
@@ -75,3 +75,24 @@ where claim.json contains the claimset:
   "name": "admin"
 }
 ```
+
+## Example for userinfo
+
+When you need to mock your userinfo call, you can create a token with the above example and thereafter
+do a GET on the /userinfo enpoint with an 'Authorization' header including 'Bearer <jwt>' where <jwt> is the
+generated token of the example. 
+
+Note that your claims need to contain the fields you want to return for userinfo. 
+Currently supported are:
+
+```json
+{
+    "iss": "http://localhost:8080",
+    "sub": "F82E617D-DEAF-4EE6-8F96-CF3409060CA2",
+    "email": "admin@example.com",
+    "email_verified": true,
+    "name": "Arie Ministrone"
+}
+```
+Name, email and email_verified. The other 2 are required for generation of the token and are used in the validation. 
+

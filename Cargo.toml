@@ -2,7 +2,7 @@
 authors = ["Olger Warnier <olger@spectare.nl>"]
 edition = "2018"
 name = "oidc-token-test-service"
-version = "0.2.0"
+version = "0.2.4"
 
 [dependencies]
 actix-cors = "0.6.1"
@@ -10,10 +10,12 @@ actix-multipart = "0.4.0"
 actix-rt = "2.7.0"
 actix-service = "2.0.2"
 actix-web = "4.1.0"
+actix-4-jwt-auth = "0.4.4"
+#actix-4-jwt-auth = { path = "../actix-4-jwt-auth" }
 biscuit = "0.6.0-beta1"
 bytes = "1.2.0"
 chrono = "0.4.10"
-clap = "2.34.0"
+clap = "3.2.15"
 der-parser = "8.1.0"
 env_logger = "0.9.0"
 futures = "0.3.21"
@@ -31,6 +33,7 @@ serde = "1.0"
 serde_derive = "1.0"
 serde_json = "1.0"
 sysinfo = "0.24.7"
+reqwest = {version = "0.11.9", features = ["json", "blocking"]}
 
 # [profile.release]
 # debug = true
