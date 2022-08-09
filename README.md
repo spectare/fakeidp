@@ -53,7 +53,7 @@ where BIND and PORT are environment variables that allow you to change the endpo
 Note that you need to expose the port you choose and match that with the exposed host name/port.
 EXPOSED_HOST is  the base URL used by the outside world to find the ./well-known/openid-configuration and the keys. 
 
-## Use it for OIDC Login
+## Use it for manual OIDC Login
 
 At this moment it is possible to use a simple implicit flow (response_type=token%20id_token&scope=openid) and trigger
 a login screen. Within the screen you can setup your sub(ject) - most of the times your account ID and your name. 

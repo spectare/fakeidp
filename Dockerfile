@@ -38,7 +38,7 @@ COPY --from=cargo-build /usr/src/oidc-token-test-service/keys/private_key.der /u
 
 RUN mkdir -p "/usr/local/fakeidp/static"
 
-COPY --from=cargo-build /usr/src/oidc-token-test-service/static/* /usr/local/fakeidp/static
+COPY --from=cargo-build /usr/src/oidc-token-test-service/static/* /usr/local/fakeidp/static/
 
 RUN chown runtme:runtme /usr/local/bin/oidc-token-test-service
 
