@@ -11,7 +11,7 @@ production setup as it allows you to create any kind of JWT token signed by the 
 Running the binary works follows: 
 
 ```bash
-oidc-token-test-service 0.2
+oidc-token-test-service
 Allows to generate any valid JWT for OIDC
 
 USAGE:
@@ -25,6 +25,7 @@ OPTIONS:
     -b, --bind <bind>    Sets the host or IP number to bind to [default: 0.0.0.0]
     -p, --port <port>    Sets the port to listen to [default: 8080]
     -h, --host <url> Full base URL of the host the service is found, like https://accounts.google.com
+    -s, --static <folder> Sets the folder used to serve the static files from.
 
 ARGS:
     <keyfile>    Location of the RSA DER keypair as a file
@@ -52,8 +53,15 @@ where BIND and PORT are environment variables that allow you to change the endpo
 Note that you need to expose the port you choose and match that with the exposed host name/port.
 EXPOSED_HOST is  the base URL used by the outside world to find the ./well-known/openid-configuration and the keys. 
 
-## Example for JWT token creation
+## Use it for OIDC Login
 
+At this moment it is possible to use a simple implicit flow (response_type=token%20id_token&scope=openid) and trigger
+a login screen. Within the screen you can setup your sub(ject) - most of the times your account ID and your name. 
+the .well-known/openid-configuration endpoint returns the proper authorization endpoint (/auth)
+
+NOTE: PKCE FLOW IS NOT YET SUPPORTED
+
+## Example for JWT token creation
 
 The service runs by default on port 8080 and in order to generate a token, you post the required claimset 
 to the /token endpoint

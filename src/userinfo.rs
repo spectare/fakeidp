@@ -43,7 +43,7 @@ mod tests {
             }
         "##;
 
-        let rsa_keys = Secret::rsa_keypair_from_file("./static/private_key.der")
+        let rsa_keys = Secret::rsa_keypair_from_file("./keys/private_key.der")
             .expect("Cannot read RSA keypair");
         let jwk_set = create_jwk_set(&rsa_keys);
         let issuer = "http://localhost:8080".to_string();
