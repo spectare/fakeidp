@@ -84,7 +84,7 @@ mod tests {
         "##;
 
         let exposed_host = "http://localhost:8080".to_string();
-        let rsa_keys = Secret::rsa_keypair_from_file("./static/private_key.der")
+        let rsa_keys = Secret::rsa_keypair_from_file("./keys/private_key.der")
             .expect("Cannot read RSA keypair");
         let app = test::init_service(
             App::new()

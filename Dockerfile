@@ -34,7 +34,11 @@ RUN adduser --system --disabled-login --shell /bin/sh -uid 1001 --ingroup runtme
 
 COPY --from=cargo-build /usr/src/oidc-token-test-service/target/release/oidc-token-test-service /usr/local/bin/oidc-token-test-service
 
-COPY --from=cargo-build /usr/src/oidc-token-test-service/static/private_key.der /usr/local/etc/private_key.der
+COPY --from=cargo-build /usr/src/oidc-token-test-service/keys/private_key.der /usr/local/etc/private_key.der
+
+RUN mkdir -p "/usr/local/fakeidp/static"
+
+COPY --from=cargo-build /usr/src/oidc-token-test-service/static/* /usr/local/fakeidp/static
 
 RUN chown runtme:runtme /usr/local/bin/oidc-token-test-service
 
@@ -46,4 +50,4 @@ ENV PORT="8080"
 
 ENV EXPOSED_HOST="http://localhost:8080"
 
-CMD ["sh", "-c", "oidc-token-test-service /usr/local/etc/private_key.der -p ${PORT} -b ${BIND} -h ${EXPOSED_HOST}"]
+CMD ["sh", "-c", "oidc-token-test-service /usr/local/etc/private_key.der -p ${PORT} -b ${BIND} -h ${EXPOSED_HOST} -s /usr/local/fakeidp/static"]

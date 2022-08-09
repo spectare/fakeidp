@@ -49,6 +49,7 @@ pub fn create_jwk_set(secret: &Secret) -> JWKSet<Empty> {
 pub async fn openid_configuration(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
   let keys_response = json!( {
     "issuer": format!("{}", state.exposed_host),
+    "authorization_endpoint": format!("{}/auth", state.exposed_host),
     "token_endpoint": format!("{}/token", state.exposed_host),
     "jwks_uri": format!("{}/keys", state.exposed_host),
     "userinfo_endpoint": format!("{}/userinfo", state.exposed_host),
@@ -99,7 +100,7 @@ mod tests {
   #[actix_rt::test]
   async fn test_route_keys() -> Result<(), Error> {
     let exposed_host = "http://localhost:8080".to_string();
-    let rsa_keys = Secret::rsa_keypair_from_file("./static/private_key.der")
+    let rsa_keys = Secret::rsa_keypair_from_file("./keys/private_key.der")
         .expect("Cannot read RSA keypair");
     let app = test::init_service(
       App::new()
