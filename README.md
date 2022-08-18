@@ -1,4 +1,4 @@
-# OIDC Token Mock service for testing
+# OIDC compatible Fake IdP service for testing
 
 This is a HTTP(S) based service with a valid key and discovery endpoint that allows
 to generate JWT tokens based on the claims you like to receive. 
