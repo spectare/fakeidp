@@ -20,7 +20,7 @@ clap = "3.2.20"
 der-parser = "8.1.0"
 env_logger = "0.9.0"
 futures = "0.3.23"
-futures-core = {version = "0.3.23", default-features = false, features = ["alloc"]}
+futures-core = {version = "0.3.24", default-features = false, features = ["alloc"]}
 futures-util = {version = "0.3.19", default-features = false, features = ["alloc"]}
 num = "0.3.1"
 tokio = {version = "1.16.1", features = ["full"]}
