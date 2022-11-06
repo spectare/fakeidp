@@ -2,7 +2,7 @@
 authors = ["Olger Warnier <olger@spectare.nl>"]
 edition = "2021"
 name = "oidc-token-test-service"
-version = "0.2.5"
+version = "0.3.0"
 
 [dependencies]
 actix-cors = "0.6.3"
@@ -10,24 +10,21 @@ actix-multipart = "0.4.0"
 actix-rt = "2.7.0"
 actix-service = "2.0.2"
 actix-web = "4.1.0"
-actix-4-jwt-auth = "0.4.4"
+actix-4-jwt-auth = "0.5.2"
 #actix-4-jwt-auth = { path = "../actix-4-jwt-auth" }
 actix-files = "0.6.2"
 biscuit = "0.6.0-beta1"
 bytes = "1.2.1"
 chrono = "0.4.22"
-clap = "3.2.20"
+clap = {version = "4.0.17", features = ["derive", "unicode", "env"]}
 der-parser = "8.1.0"
 env_logger = "0.9.1"
 futures = "0.3.24"
 futures-core = {version = "0.3.24", default-features = false, features = ["alloc"]}
 futures-util = {version = "0.3.24", default-features = false, features = ["alloc"]}
-num = "0.3.1"
+num = "0.3"
 tokio = {version = "1.21.2", features = ["full"]}
-# futures = "0.3.1"
 nanoid = "0.4.0"
-# num-bigint = "0.4.2"
-# num = "0.4.0"
 pem = "1.1.0"
 ring = "0.16.9"
 data-encoding = "2.3.2"

@@ -50,4 +50,4 @@ ENV PORT="8080"
 
 ENV EXPOSED_HOST="http://localhost:8080"
 
-CMD ["sh", "-c", "oidc-token-test-service /usr/local/etc/private_key.der -p ${PORT} -b ${BIND} -h ${EXPOSED_HOST} -s /usr/local/fakeidp/static"]
+CMD ["sh", "-c", "oidc-token-test-service /usr/local/etc/private_key.der -p ${PORT} -b ${BIND} -e ${EXPOSED_HOST} -f /usr/local/fakeidp/static"]

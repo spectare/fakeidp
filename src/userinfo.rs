@@ -1,10 +1,10 @@
+use crate::discovery::create_jwk_set;
+use actix_4_jwt_auth::{AuthenticatedUser, OIDCValidator};
 use actix_web::{web, Error, HttpResponse};
 use biscuit::jws::*;
-use serde_json::Value;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::str;
-use actix_4_jwt_auth::{AuthenticatedUser, OIDCValidator};
-use crate::discovery::create_jwk_set;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct FoundClaims {
@@ -14,21 +14,18 @@ pub struct FoundClaims {
     pub email_verified: Option<bool>,
 }
 
-pub async fn user_info(
-    user: AuthenticatedUser<FoundClaims>
-) -> Result<HttpResponse, Error> {
-    Ok(HttpResponse::Ok()
-        .json(user.claims))
+pub async fn user_info(user: AuthenticatedUser<FoundClaims>) -> Result<HttpResponse, Error> {
+    Ok(HttpResponse::Ok().json(user.claims))
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{test, App, http};
-    use std::str;
-    use serde_json::json;
-    use actix_4_jwt_auth::OIDCValidatorConfig;
     use crate::token;
+    use actix_4_jwt_auth::OIDCValidatorConfig;
+    use actix_web::{http, test, App};
+    use serde_json::json;
+    use std::str;
 
     #[actix_rt::test]
     async fn test_route_userinfo() -> Result<(), Error> {
@@ -45,21 +42,22 @@ mod tests {
 
         let rsa_keys = Secret::rsa_keypair_from_file("./keys/private_key.der")
             .expect("Cannot read RSA keypair");
-        let jwk_set = create_jwk_set(&rsa_keys);
+        let jwk_set = create_jwk_set(rsa_keys.clone());
         let issuer = "http://localhost:8080".to_string();
-        let oidc_validator = OIDCValidator::new_for_jwks(jwk_set).unwrap();
+        let oidc_validator = OIDCValidator::new_for_jwks(jwk_set).await.unwrap();
 
-        let claims_json= serde_json::from_str(claims).unwrap();
+        let claims_json = serde_json::from_str(claims).unwrap();
         let jwt = token::create_jwt(&rsa_keys, claims_json);
 
         let app = test::init_service(
             App::new()
-                .app_data( OIDCValidatorConfig {
+                .app_data(OIDCValidatorConfig {
                     issuer: issuer.clone(),
                     validator: oidc_validator.clone(),
                 })
                 .service(web::resource("/").route(web::post().to(user_info))),
-        ).await;
+        )
+        .await;
 
         let req = test::TestRequest::post()
             .uri("/")
