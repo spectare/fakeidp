@@ -35,15 +35,14 @@ jobs:
 
   publish-docker-latest:
     machine:
-      image: ubuntu-2204:2022.04.1
+      image: ubuntu-2204:2022.10.1
     resource_class: large
     steps:
       - checkout
       - run:
           name: Create the Multi Arch build structure
           command: |
-            docker context create multi-arch-context
-            docker buildx create --use multi-arch-context --name multi-arch-builder
+            docker buildx create --use --name multi-arch-builder
       - run:
           name: Docker build and push
           command: |
@@ -76,6 +75,7 @@ jobs:
             TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker buildx build --platform=linux/arm64,linux/amd64 --push \
+              --progress=plain\
               -t spectare/oidc-token-test-service:$TAG \
               -t spectare/oidc-token-test-service:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
