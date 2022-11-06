@@ -88,10 +88,7 @@ mod tests {
             .expect("Cannot read RSA keypair");
         let app = test::init_service(
             App::new()
-                .app_data(web::Data::new(AppState::new(
-                    &rsa_keys,
-                    exposed_host,
-                )))
+                .app_data(web::Data::new(AppState::new(rsa_keys, exposed_host)))
                 .service(web::resource("/").route(web::post().to(create_token))),
         )
         .await;
