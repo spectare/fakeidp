@@ -51,6 +51,7 @@ jobs:
             TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker buildx build --platform=linux/arm64,linux/amd64 --push \
+              --progress=tty \
               -t spectare/oidc-token-test-service:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
               --build-arg COMMITID=${CIRCLE_SHA1} \
@@ -87,12 +88,13 @@ workflows:
     jobs:
       - build
       - publish-docker-latest:
-          context: DOCKER
-          requires:
-            - build
+          context:
+            DOCKER
+            #requires:
+            #- build
           filters:
             branches:
-              only: main
+              only: publish-latest
       - publish-docker-release:
           context: DOCKER
           filters:
