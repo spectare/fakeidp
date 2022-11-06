@@ -44,7 +44,7 @@ jobs:
           name: Create the Multi Arch build structure
           command: |
             docker context create multi-arch-context
-            docker buildx create --use multi-arch-context -name multi-arch-builder
+            docker buildx create --use multi-arch-context --name multi-arch-builder
       - run:
           name: Docker build and push
           command: |
