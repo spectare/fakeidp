@@ -35,7 +35,7 @@ jobs:
 
   publish-docker-latest:
     machine:
-      image: cimg/rust:1.64.0
+      image: ubuntu-2204:2022.04.1
     resource_class: large
     steps:
       - checkout
@@ -47,9 +47,12 @@ jobs:
       - run:
           name: Docker build and push
           command: |
+            echo `git describe --tags --exact-match` > /tmp/version.txt
+            TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker buildx build --platform=linux/arm64,linux/amd64 --push \
               -t spectare/oidc-token-test-service:latest \
+              --build-arg VERSION=$(cat /tmp/version.txt) \
               --build-arg COMMITID=${CIRCLE_SHA1} \
               .
 
