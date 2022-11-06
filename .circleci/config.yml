@@ -5,7 +5,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/rust:1.64.0
+      - image: cimg/rust:1.62.0
 
     environment:
       # Set your codecov token if your repository is private.
@@ -35,47 +35,43 @@ jobs:
 
   publish-docker-latest:
     docker:
-      - image: cimg/rust:1.64.0
+      - image: cimg/rust:1.62.0
     steps:
       - checkout
       - setup_remote_docker:
           version: 20.10.7
       - run:
-          name: Create the Multi Arch build structure
-          command: |
-            docker buildx create --use --name multi-arch-builder
-      - run:
           name: Docker build and push
           command: |
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            docker build \
               -t spectare/oidc-token-test-service:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
               --build-arg COMMITID=${CIRCLE_SHA1} \
               .
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push spectare/oidc-token-test-service:latest
+    # The resource_class feature allows configuring CPU and RAM resources for each job. Different resource classes are available for different executors. https://circleci.com/docs/2.0/configuration-reference/#resourceclass
+    resource_class: large
 
   publish-docker-release:
     docker:
-      - image: cimg/rust:1.64.0
+      - image: cimg/rust:1.62.0
     steps:
       - checkout
       - setup_remote_docker:
           version: 20.10.7
-      - run:
-          name: Create the Multi Arch build structure
-          command: |
-            docker buildx create --use --name multi-arch-builder
       - run:
           name: Docker build and push
           command: |
             echo `git describe --tags --exact-match` > /tmp/version.txt
             TAG=$(cat /tmp/version.txt)
-            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            docker build \
               -t spectare/oidc-token-test-service:$TAG \
               --build-arg VERSION=$(cat /tmp/version.txt) \
               --build-arg COMMITID=${CIRCLE_SHA1} \
               .
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+            docker push spectare/oidc-token-test-service:$TAG
 
 workflows:
   version: 2
