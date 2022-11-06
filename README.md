@@ -1,34 +1,46 @@
 # OIDC compatible Fake IdP service for testing
 
 This is a HTTP(S) based service with a valid key and discovery endpoint that allows
-to generate JWT tokens based on the claims you like to receive. 
+to generate JWT tokens based on the claims you like to receive.
 
-WARNING: This is a **test** service, don't use the keys and the service as such in a 
-production setup as it allows you to create any kind of JWT token signed by the given keys. 
+WARNING: This is a **test** service, don't use the keys and the service as such in a
+production setup as it allows you to create any kind of JWT token signed by the given keys.
+
+## Version 0.3 and on
+
+COMMAND LINED ARGUMENTS CHANGED AS OF VERSION 0.3.0
+
+The -s for static is no -f for folder (serving the html for login)
+
+The -h for the exposed host is now -e (that makes the help work as it should)
 
 ## Running the service
 
-Running the binary works follows: 
+Running the binary works follows:
 
 ```bash
 oidc-token-test-service
 Allows to generate any valid JWT for OIDC
 
-USAGE:
-    oidc-token-test-service [OPTIONS] [keyfile]
+❯ ./target/debug/oidc-token-test-service --help
+Usage: oidc-token-test-service [OPTIONS] [KEYFILE]
 
-FLAGS:
-    -h, --help       Prints help information
-    -V, --version    Prints version information
+Arguments:
+  [KEYFILE]  Location of the RSA DER keypair as a file
 
-OPTIONS:
-    -b, --bind <bind>    Sets the host or IP number to bind to [default: 0.0.0.0]
-    -p, --port <port>    Sets the port to listen to [default: 8080]
-    -h, --host <url> Full base URL of the host the service is found, like https://accounts.google.com
-    -s, --static <folder> Sets the folder used to serve the static files from.
-
-ARGS:
-    <keyfile>    Location of the RSA DER keypair as a file
+Options:
+  -p, --bind-port <BIND_PORT>
+          Sets the port to listen to [default: 8080]
+  -b, --bind-host <BIND_HOST>
+          Sets the host or IP number to bind to [default: 0.0.0.0]
+  -e, --exposed-host <EXPOSED_HOST>
+          Full base URL of the host the service is found, like https://accounts.google.com [default: http://localhost:8080]
+  -f, --folder <FOLDER>
+          Folder for the static files to serve [default: ./static]
+  -h, --help
+          Print help information
+  -V, --version
+          Print version information
 ```
 
 ### Generate keys
@@ -41,7 +53,8 @@ openssl genpkey -algorithm RSA \
                 -outform der \
                 -out private_key.der
 ```
-Note that a keypair is provided by default. 
+
+Note that a keypair is provided by default.
 
 ### The other option is to run it as a DOCKER container:
 
@@ -49,27 +62,29 @@ Note that a keypair is provided by default.
 docker run -p9090:9090 -e BIND=0.0.0.0 -e PORT=9090 -e EXPOSED_HOST=http://localhost:9090 spectare/oidc-token-test-service:latest
 ```
 
-where BIND and PORT are environment variables that allow you to change the endpoint binding and address within the container. 
+where BIND and PORT are environment variables that allow you to change the endpoint binding and address within the container.
 Note that you need to expose the port you choose and match that with the exposed host name/port.
-EXPOSED_HOST is  the base URL used by the outside world to find the ./well-known/openid-configuration and the keys. 
+EXPOSED_HOST is the base URL used by the outside world to find the ./well-known/openid-configuration and the keys.
 
 ## Use it for manual OIDC Login
 
 At this moment it is possible to use a simple implicit flow (response_type=token%20id_token&scope=openid) and trigger
-a login screen. Within the screen you can setup your sub(ject) - most of the times your account ID and your name. 
+a login screen. Within the screen you can setup your sub(ject) - most of the times your account ID and your name.
 the .well-known/openid-configuration endpoint returns the proper authorization endpoint (/auth)
 
 NOTE: PKCE FLOW IS NOT YET SUPPORTED
 
 ## Example for JWT token creation
 
-The service runs by default on port 8080 and in order to generate a token, you post the required claimset 
+The service runs by default on port 8080 and in order to generate a token, you post the required claimset
 to the /token endpoint
 
 ```bash
 curl -d "@claim.json" -X POST http://`hostname -f`:9090/token
 ```
+
 where claim.json contains the claimset:
+
 ```json
 {
   "iss": "http://localhost:8080/mock",
@@ -88,19 +103,19 @@ where claim.json contains the claimset:
 
 When you need to mock your userinfo call, you can create a token with the above example and thereafter
 do a GET on the /userinfo enpoint with an 'Authorization' header including 'Bearer <jwt>' where <jwt> is the
-generated token of the example. 
+generated token of the example.
 
-Note that your claims need to contain the fields you want to return for userinfo. 
+Note that your claims need to contain the fields you want to return for userinfo.
 Currently supported are:
 
 ```json
 {
-    "iss": "http://localhost:8080",
-    "sub": "F82E617D-DEAF-4EE6-8F96-CF3409060CA2",
-    "email": "admin@example.com",
-    "email_verified": true,
-    "name": "Arie Ministrone"
+  "iss": "http://localhost:8080",
+  "sub": "F82E617D-DEAF-4EE6-8F96-CF3409060CA2",
+  "email": "admin@example.com",
+  "email_verified": true,
+  "name": "Arie Ministrone"
 }
 ```
-Name, email and email_verified. The other 2 are required for generation of the token and are used in the validation. 
 
+Name, email and email_verified. The other 2 are required for generation of the token and are used in the validation.
