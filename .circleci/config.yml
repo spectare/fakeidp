@@ -48,6 +48,7 @@ jobs:
             docker buildx create --use multi-arch-context
       - run:
           name: Docker build and push
+          no_output_timeout: 30m
           command: |
             echo `git describe --tags --exact-match` > /tmp/version.txt
             TAG=$(cat /tmp/version.txt)
