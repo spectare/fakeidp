@@ -48,12 +48,12 @@ jobs:
             docker buildx create --use multi-arch-context
       - run:
           name: Docker build and push
-          no_output_timeout: 30m
+          no_output_timeout: 60m
           command: |
             echo `git describe --tags --exact-match` > /tmp/version.txt
             TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            docker buildx build --platform=linux/amd64,linux/arm64 --push \
               --progress=plain\
               -t spectare/oidc-token-test-service:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
@@ -63,6 +63,7 @@ jobs:
   publish-docker-release:
     docker:
       - image: cimg/rust:1.64.0
+    resource_class: large
     steps:
       - checkout
       - setup_remote_docker:
