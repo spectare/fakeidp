@@ -34,15 +34,18 @@ jobs:
             - "./target"
 
   publish-docker-latest:
-    machine:
-      image: ubuntu-2204:2022.10.1
+    docker:
+      - image: cimg/base:stable
     resource_class: large
     steps:
+      - setup_remote_docker:
+          version: 20.10.18
       - checkout
       - run:
           name: Create the Multi Arch build structure
           command: |
-            docker buildx create --use --name multi-arch-builder
+            docker context create multi-arch-context
+            docker buildx create --use multi-arch-context
       - run:
           name: Docker build and push
           command: |
@@ -62,7 +65,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.18
       - run:
           name: Create the Multi Arch build structure
           command: |
