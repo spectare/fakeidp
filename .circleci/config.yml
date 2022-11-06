@@ -87,9 +87,6 @@ workflows:
   ci:
     jobs:
       - build
-          filters:
-            branches:
-              ignore: publish-latest
       - publish-docker-latest:
           context:
             DOCKER
