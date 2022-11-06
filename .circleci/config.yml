@@ -43,12 +43,13 @@ jobs:
       - run:
           name: Create the Multi Arch build structure
           command: |
-            docker buildx create --use --name multi-arch-builder
+            docker context create multi-arch-context
+            docker buildx create multi-arch-context --use --name multi-arch-builder
       - run:
           name: Docker build and push
           command: |
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            docker buildx build --build-context multi-arch-context --platform=linux/arm64,linux/amd64 --push \
               -t spectare/oidc-token-test-service:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
               --build-arg COMMITID=${CIRCLE_SHA1} \
