@@ -34,12 +34,11 @@ jobs:
             - "./target"
 
   publish-docker-latest:
-    docker:
-      - image: cimg/rust:1.64.0
+    machine:
+      image: cimg/rust:1.64.0
+    resource_class: large
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.7
       - run:
           name: Create the Multi Arch build structure
           command: |
@@ -64,7 +63,8 @@ jobs:
       - run:
           name: Create the Multi Arch build structure
           command: |
-            docker buildx create --use --name multi-arch-builder
+            docker context create multi-arch-context
+            docker buildx create --use multi-arch-context --name multi-arch-builder
       - run:
           name: Docker build and push
           command: |
@@ -73,6 +73,7 @@ jobs:
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker buildx build --platform=linux/arm64,linux/amd64 --push \
               -t spectare/oidc-token-test-service:$TAG \
+              -t spectare/oidc-token-test-service:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
               --build-arg COMMITID=${CIRCLE_SHA1} \
               .
