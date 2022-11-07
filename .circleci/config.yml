@@ -63,7 +63,7 @@ jobs:
 
   publish-docker-release:
     docker:
-      - image: cimg/rust:1.64.0
+      - image: cimg/base:stable
     resource_class: large
     steps:
       - checkout
@@ -80,7 +80,8 @@ jobs:
             echo `git describe --tags --exact-match` > /tmp/version.txt
             TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            #docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            docker buildx build --platform=linux/arm64 --push \
               --progress=plain\
               -t spectare/oidc-token-test-service:$TAG \
               -t spectare/oidc-token-test-service:latest \
@@ -94,13 +95,12 @@ workflows:
     jobs:
       - build
       - publish-docker-latest:
-          context:
-            DOCKER
-            #requires:
-            #- build
+          context: DOCKER
+          requires:
+            - build
           filters:
             branches:
-              only: publish-latest
+              only: main
       - publish-docker-release:
           context: DOCKER
           filters:
