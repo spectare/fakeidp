@@ -34,23 +34,28 @@ jobs:
             - "./target"
 
   publish-docker-latest:
-    machine:
-      image: ubuntu-2204:2022.04.1
+    docker:
+      - image: cimg/base:stable
     resource_class: large
     steps:
+      - setup_remote_docker:
+          version: 20.10.18
       - checkout
       - run:
           name: Create the Multi Arch build structure
           command: |
             docker context create multi-arch-context
-            docker buildx create --use multi-arch-context --name multi-arch-builder
+            docker buildx create --use multi-arch-context
       - run:
           name: Docker build and push
+          no_output_timeout: 1.5h
           command: |
             echo `git describe --tags --exact-match` > /tmp/version.txt
             TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            #docker buildx build --platform=linux/amd64,linux/arm64 --push \
+            docker buildx build --platform=linux/amd64 --push \
+              --progress=plain\
               -t spectare/oidc-token-test-service:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
               --build-arg COMMITID=${CIRCLE_SHA1} \
@@ -58,11 +63,12 @@ jobs:
 
   publish-docker-release:
     docker:
-      - image: cimg/rust:1.64.0
+      - image: cimg/base:stable
+    resource_class: large
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.7
+          version: 20.10.18
       - run:
           name: Create the Multi Arch build structure
           command: |
@@ -74,7 +80,9 @@ jobs:
             echo `git describe --tags --exact-match` > /tmp/version.txt
             TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            #docker buildx build --platform=linux/arm64,linux/amd64 --push \
+            docker buildx build --platform=linux/arm64 --push \
+              --progress=plain\
               -t spectare/oidc-token-test-service:$TAG \
               -t spectare/oidc-token-test-service:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
