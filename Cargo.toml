@@ -16,7 +16,7 @@ actix-files = "0.6.2"
 biscuit = "0.6.0-beta1"
 bytes = "1.2.1"
 chrono = "0.4.22"
-clap = {version = "4.0.22", features = ["derive", "unicode", "env"]}
+clap = {version = "4.0.23", features = ["derive", "unicode", "env"]}
 der-parser = "8.1.0"
 env_logger = "0.9.3"
 futures = "0.3.24"
