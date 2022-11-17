@@ -2,7 +2,7 @@ use actix_4_jwt_auth::{OIDCValidator, OIDCValidatorConfig};
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{middleware, web, App, HttpServer};
-use biscuit::jws::Secret;
+use biscuit::{jws::Secret, ValidationOptions};
 use clap::Parser;
 use std::process::Command;
 
@@ -69,7 +69,10 @@ async fn main() -> std::io::Result<()> {
     let rsa_keys = Secret::rsa_keypair_from_file(keyfile_to_use).expect("Cannot read RSA keypair");
 
     let jwk_set = discovery::create_jwk_set(rsa_keys.clone());
-    let validator = OIDCValidator::new_for_jwks(jwk_set).await.unwrap();
+    let validation_options = ValidationOptions::default();
+    let validator = OIDCValidator::new_for_jwks(jwk_set, validation_options)
+        .await
+        .unwrap();
     let oidc_config = OIDCValidatorConfig {
         issuer: "".to_string(),
         validator,

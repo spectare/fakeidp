@@ -24,6 +24,7 @@ mod tests {
     use crate::token;
     use actix_4_jwt_auth::OIDCValidatorConfig;
     use actix_web::{http, test, App};
+    use biscuit::ValidationOptions;
     use serde_json::json;
     use std::str;
 
@@ -40,11 +41,14 @@ mod tests {
             }
         "##;
 
+        let validation_options = ValidationOptions::default();
         let rsa_keys = Secret::rsa_keypair_from_file("./keys/private_key.der")
             .expect("Cannot read RSA keypair");
         let jwk_set = create_jwk_set(rsa_keys.clone());
         let issuer = "http://localhost:8080".to_string();
-        let oidc_validator = OIDCValidator::new_for_jwks(jwk_set).await.unwrap();
+        let oidc_validator = OIDCValidator::new_for_jwks(jwk_set, validation_options)
+            .await
+            .unwrap();
 
         let claims_json = serde_json::from_str(claims).unwrap();
         let jwt = token::create_jwt(&rsa_keys, claims_json);
