@@ -4,9 +4,9 @@ version = 3
 
 [[package]]
 name = "actix-4-jwt-auth"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16a7820751b33acd1b2b077cea501519a7d57dce937dfaa34578e58046fc9105"
+checksum = "6740b7ce13368f864fc2fa280720b7b877715a1c2c9f670744de2f7d69a15450"
 dependencies = [
  "actix-rt",
  "actix-service",
