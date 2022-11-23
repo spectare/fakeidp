@@ -14,7 +14,7 @@ actix-4-jwt-auth = "0.6.1"
 #actix-4-jwt-auth = { path = "../actix-4-jwt-auth" }
 actix-files = "0.6.2"
 biscuit = "0.6.0-beta1"
-bytes = "1.2.1"
+bytes = "1.3.0"
 chrono = "0.4.23"
 clap = {version = "4.0.26", features = ["derive", "unicode", "env"]}
 der-parser = "8.1.0"
