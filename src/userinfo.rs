@@ -1,5 +1,8 @@
 use crate::discovery::create_jwk_set;
-use actix_4_jwt_auth::{AuthenticatedUser, OIDCValidator};
+use actix_4_jwt_auth::{
+    AuthenticatedUser, Oidc, OidcConfig, OidcBiscuitValidator, 
+    biscuit::{ValidationOptions, Validation}
+};
 use actix_web::{web, Error, HttpResponse};
 use biscuit::jws::*;
 use serde::{Deserialize, Serialize};
@@ -22,7 +25,6 @@ pub async fn user_info(user: AuthenticatedUser<FoundClaims>) -> Result<HttpRespo
 mod tests {
     use super::*;
     use crate::token;
-    use actix_4_jwt_auth::OIDCValidatorConfig;
     use actix_web::{http, test, App};
     use biscuit::ValidationOptions;
     use serde_json::json;
@@ -46,19 +48,29 @@ mod tests {
             .expect("Cannot read RSA keypair");
         let jwk_set = create_jwk_set(rsa_keys.clone());
         let issuer = "http://localhost:8080".to_string();
-        let oidc_validator = OIDCValidator::new_for_jwks(jwk_set, validation_options)
-            .await
-            .unwrap();
+        // let oidc_validator = OIDCValidator::new_for_jwks(jwk_set, validation_options)
+        //     .await
+        //     .unwrap();
 
+        let oidc = Oidc::new(OidcConfig::Issuer(issuer.clone().into())).await.unwrap();
+
+        let biscuit_validator = OidcBiscuitValidator { options: ValidationOptions {
+                issuer: Validation::Validate(issuer),
+                ..ValidationOptions::default()
+            }
+        };
         let claims_json = serde_json::from_str(claims).unwrap();
         let jwt = token::create_jwt(&rsa_keys, claims_json);
 
         let app = test::init_service(
             App::new()
-                .app_data(OIDCValidatorConfig {
-                    issuer: issuer.clone(),
-                    validator: oidc_validator.clone(),
-                })
+                .app_data(oidc.clone())
+                .wrap(biscuit_validator.clone())
+                // .wrap(OidcBiscuitValidator::default())
+                // .app_data(OIDCValidatorConfig {
+                //     issuer: issuer.clone(),
+                //     validator: oidc_validator.clone(),
+                // })
                 .service(web::resource("/").route(web::post().to(user_info))),
         )
         .await;
