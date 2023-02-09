@@ -1,8 +1,11 @@
-use actix_4_jwt_auth::{OIDCValidator, OIDCValidatorConfig};
+use actix_4_jwt_auth::{
+    AuthenticatedUser, Oidc, OidcConfig, OidcBiscuitValidator, 
+    biscuit::{ValidationOptions, Validation}
+};
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{middleware, web, App, HttpServer};
-use biscuit::{jws::Secret, ValidationOptions};
+use biscuit::{jws::Secret};
 use clap::Parser;
 use std::process::Command;
 
@@ -69,14 +72,8 @@ async fn main() -> std::io::Result<()> {
     let rsa_keys = Secret::rsa_keypair_from_file(keyfile_to_use).expect("Cannot read RSA keypair");
 
     let jwk_set = discovery::create_jwk_set(rsa_keys.clone());
-    let validation_options = ValidationOptions::default();
-    let validator = OIDCValidator::new_for_jwks(jwk_set, validation_options)
-        .await
-        .unwrap();
-    let oidc_config = OIDCValidatorConfig {
-        issuer: "".to_string(),
-        validator,
-    };
+ 
+    let oidc = Oidc::new(OidcConfig::Jwks(jwk_set)).await.unwrap();
 
     let mut user = String::from_utf8(Command::new("whoami").output().unwrap().stdout).unwrap();
     user.pop();
@@ -95,7 +92,7 @@ async fn main() -> std::io::Result<()> {
                 rsa_keys.clone(),
                 args.exposed_host.clone(),
             )))
-            .app_data(oidc_config.clone())
+            .app_data(oidc.clone())
             .service(web::resource("/auth/login").route(web::post().to(auth::login)))
             .service(web::resource("/auth").route(web::get().to(auth::auth)))
             .service(web::resource("/token").route(web::post().to(token::create_token)))
