@@ -65,7 +65,25 @@ pub fn create_jwt(signing_secret: &Secret, claims: Value) -> String {
 mod tests {
     use super::*;
     use actix_web::{http, test, web, App};
+    use actix_4_jwt_auth::{
+        AuthenticatedUser, Oidc, OidcConfig, OidcBiscuitValidator, 
+        biscuit::{ValidationOptions, Validation}
+    };
+    use crate::discovery::create_jwk_set;
     use std::str;
+
+    async fn create_oidc(secret: &Secret) -> Oidc {
+        let jwk_set = create_jwk_set(secret.clone());
+        Oidc::new(OidcConfig::Jwks(jwk_set)).await.unwrap()
+    }
+
+    fn create_validator(issuer: String) -> OidcBiscuitValidator {
+        OidcBiscuitValidator { options: ValidationOptions {
+                issuer: Validation::Validate(issuer),
+                ..ValidationOptions::default()
+            }
+        }
+    }
 
     #[actix_rt::test]
     async fn test_route_create_token() -> Result<(), Error> {
@@ -83,11 +101,17 @@ mod tests {
             }
         "##;
 
-        let exposed_host = "http://localhost:8080".to_string();
         let rsa_keys = Secret::rsa_keypair_from_file("./keys/private_key.der")
             .expect("Cannot read RSA keypair");
+        let issuer = "http://localhost:8080".to_string();
+        let oidc = create_oidc(&rsa_keys).await;
+        let biscuit_validator = create_validator(issuer);
+
+        let exposed_host = "http://localhost:8080".to_string();
         let app = test::init_service(
             App::new()
+                .app_data(oidc.clone())
+                //.wrap(biscuit_validator.clone())
                 .app_data(web::Data::new(AppState::new(rsa_keys, exposed_host)))
                 .service(web::resource("/").route(web::post().to(create_token))),
         )

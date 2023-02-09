@@ -75,11 +75,6 @@ async fn main() -> std::io::Result<()> {
  
     let oidc = Oidc::new(OidcConfig::Jwks(jwk_set)).await.unwrap();
 
-    let biscuit_validator = OidcBiscuitValidator { options: ValidationOptions {
-            ..ValidationOptions::default()
-        }
-    };
-
     let mut user = String::from_utf8(Command::new("whoami").output().unwrap().stdout).unwrap();
     user.pop();
     println!("FakeIdP endpoint bound to {} as user {}!", bind, user);
@@ -98,7 +93,6 @@ async fn main() -> std::io::Result<()> {
                 args.exposed_host.clone(),
             )))
             .app_data(oidc.clone())
-            .wrap(biscuit_validator.clone())
             .service(web::resource("/auth/login").route(web::post().to(auth::login)))
             .service(web::resource("/auth").route(web::get().to(auth::auth)))
             .service(web::resource("/token").route(web::post().to(token::create_token)))
