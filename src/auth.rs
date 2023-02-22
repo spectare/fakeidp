@@ -20,8 +20,7 @@ pub struct AuthParameters {
 }
 
 pub async fn auth(
-    state: web::Data<AppState>,
-    info: web::Query<AuthParameters>,
+    info: web::Query<AuthParameters>
 ) -> Result<HttpResponse, Error> {
     let body = format!(include_str!("../template/login.html"), state = info.state, redirect_uri = info.redirect_uri, nonce = info.nonce, client_id = info.client_id);
     Ok(HttpResponse::build(StatusCode::OK)

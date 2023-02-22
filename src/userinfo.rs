@@ -1,7 +1,7 @@
 use crate::discovery::create_jwk_set;
 use actix_4_jwt_auth::{
     AuthenticatedUser, Oidc, OidcConfig, OidcBiscuitValidator, 
-    biscuit::{ValidationOptions, Validation}
+    biscuit::Validation
 };
 use actix_web::{web, Error, HttpResponse};
 use biscuit::jws::*;
