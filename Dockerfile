@@ -2,11 +2,11 @@
 # Cargo Build Stage
 # ------------------------------------------------------------------------------
 
-FROM rust:1.69.0-buster as cargo-build
+FROM rust:1.73.0-bookworm as cargo-build
 
 RUN apt-get update
 
-WORKDIR /usr/src/oidc-token-test-service
+WORKDIR /usr/src/fakeidp
 
 COPY Cargo.toml Cargo.toml
 
@@ -24,7 +24,7 @@ RUN cargo build --release
 # Final Stage
 # ------------------------------------------------------------------------------
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 RUN apt-get update && rm -rf /var/lib/apt/lists/*
 
@@ -32,15 +32,15 @@ RUN addgroup --system -gid 1000 runtme
 
 RUN adduser --system --disabled-login --shell /bin/sh -uid 1001 --ingroup runtme runtme
 
-COPY --from=cargo-build /usr/src/oidc-token-test-service/target/release/oidc-token-test-service /usr/local/bin/oidc-token-test-service
+COPY --from=cargo-build /usr/src/fakeidp/target/release/fakeidp /usr/local/bin/fakeidp
 
-COPY --from=cargo-build /usr/src/oidc-token-test-service/keys/private_key.der /usr/local/etc/private_key.der
+COPY --from=cargo-build /usr/src/fakeidp/keys/private_key.der /usr/local/etc/private_key.der
 
 RUN mkdir -p "/usr/local/fakeidp/static"
 
-COPY --from=cargo-build /usr/src/oidc-token-test-service/static/* /usr/local/fakeidp/static/
+COPY --from=cargo-build /usr/src/fakeidp/static/* /usr/local/fakeidp/static/
 
-RUN chown runtme:runtme /usr/local/bin/oidc-token-test-service
+RUN chown runtme:runtme /usr/local/bin/fakeidp
 
 USER runtme
 
@@ -50,4 +50,4 @@ ENV PORT="8080"
 
 ENV EXPOSED_HOST="http://localhost:8080"
 
-CMD ["sh", "-c", "oidc-token-test-service /usr/local/etc/private_key.der -p ${PORT} -b ${BIND} -e ${EXPOSED_HOST} -f /usr/local/fakeidp/static"]
+CMD ["sh", "-c", "fakeidp /usr/local/etc/private_key.der -p ${PORT} -b ${BIND} -e ${EXPOSED_HOST} -f /usr/local/fakeidp/static"]
