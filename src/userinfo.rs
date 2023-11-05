@@ -1,7 +1,6 @@
 use crate::discovery::create_jwk_set;
 use actix_4_jwt_auth::{
-    AuthenticatedUser, Oidc, OidcConfig, OidcBiscuitValidator, 
-    biscuit::Validation
+    biscuit::Validation, AuthenticatedUser, Oidc, OidcBiscuitValidator, OidcConfig,
 };
 use actix_web::{web, Error, HttpResponse};
 use biscuit::jws::*;
@@ -36,10 +35,11 @@ mod tests {
     }
 
     fn create_validator(issuer: String) -> OidcBiscuitValidator {
-        OidcBiscuitValidator { options: ValidationOptions {
+        OidcBiscuitValidator {
+            options: ValidationOptions {
                 issuer: Validation::Validate(issuer),
                 ..ValidationOptions::default()
-            }
+            },
         }
     }
 
@@ -48,7 +48,7 @@ mod tests {
             {
                 "iss": "http://localhost:8080",
                 "sub": "F82E617D-DEAF-4EE6-8F96-CF3409060CA2",
-                "aud": "oidc-token-mock",
+                "aud": "fakeidp",
                 "email": "admin@example.com",
                 "email_verified": true,
                 "name": "Arie Ministrone"
@@ -98,7 +98,6 @@ mod tests {
         Ok(())
     }
 
-    
     #[actix_rt::test]
     async fn test_route_userinfo_no_token() -> Result<(), Error> {
         let rsa_keys = Secret::rsa_keypair_from_file("./keys/private_key.der")
@@ -123,8 +122,10 @@ mod tests {
 
         let resp = test::try_call_service(&app, req).await;
         let error = resp.unwrap_err();
-        assert_eq!(error.to_string(), "No token found or token is not authorized");
+        assert_eq!(
+            error.to_string(),
+            "No token found or token is not authorized"
+        );
         Ok(())
     }
 }
-

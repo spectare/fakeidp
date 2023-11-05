@@ -828,6 +828,39 @@ dependencies = [
 ]
 
 [[package]]
+name = "fakeidp"
+version = "0.3.0"
+dependencies = [
+ "actix-4-jwt-auth",
+ "actix-cors",
+ "actix-files",
+ "actix-multipart",
+ "actix-rt",
+ "actix-service",
+ "actix-web",
+ "biscuit",
+ "bytes",
+ "chrono",
+ "clap",
+ "data-encoding",
+ "der-parser",
+ "env_logger",
+ "futures",
+ "futures-core",
+ "futures-util",
+ "nanoid",
+ "num",
+ "pem",
+ "reqwest",
+ "ring",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "sysinfo",
+ "tokio",
+]
+
+[[package]]
 name = "fastrand"
 version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1478,39 +1511,6 @@ checksum = "0fac9e2da13b5eb447a6ce3d392f23a29d8694bff781bf03a16cd9ac8697593b"
 dependencies = [
  "hermit-abi 0.2.6",
  "libc",
-]
-
-[[package]]
-name = "oidc-token-test-service"
-version = "0.3.0"
-dependencies = [
- "actix-4-jwt-auth",
- "actix-cors",
- "actix-files",
- "actix-multipart",
- "actix-rt",
- "actix-service",
- "actix-web",
- "biscuit",
- "bytes",
- "chrono",
- "clap",
- "data-encoding",
- "der-parser",
- "env_logger",
- "futures",
- "futures-core",
- "futures-util",
- "nanoid",
- "num",
- "pem",
- "reqwest",
- "ring",
- "serde",
- "serde_derive",
- "serde_json",
- "sysinfo",
- "tokio",
 ]
 
 [[package]]

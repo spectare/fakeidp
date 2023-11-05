@@ -19,11 +19,11 @@ The -h for the exposed host is now -e (that makes the help work as it should)
 Running the binary works follows:
 
 ```bash
-oidc-token-test-service
+fakeidp
 Allows to generate any valid JWT for OIDC
 
-❯ ./target/debug/oidc-token-test-service --help
-Usage: oidc-token-test-service [OPTIONS] [KEYFILE]
+❯ ./target/debug/fakeidp --help
+Usage: fakeidp [OPTIONS] [KEYFILE]
 
 Arguments:
   [KEYFILE]  Location of the RSA DER keypair as a file
@@ -59,7 +59,7 @@ Note that a keypair is provided by default.
 ### The other option is to run it as a DOCKER container:
 
 ```bash
-docker run -p9090:9090 -e BIND=0.0.0.0 -e PORT=9090 -e EXPOSED_HOST=http://localhost:9090 spectare/oidc-token-test-service:latest
+docker run -p9090:9090 -e BIND=0.0.0.0 -e PORT=9090 -e EXPOSED_HOST=http://localhost:9090 spectare/fakeidp:latest
 ```
 
 where BIND and PORT are environment variables that allow you to change the endpoint binding and address within the container.
