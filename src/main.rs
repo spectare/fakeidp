@@ -1,6 +1,5 @@
 use actix_4_jwt_auth::{
-    AuthenticatedUser, Oidc, OidcConfig, OidcBiscuitValidator, 
-    biscuit::{ValidationOptions, Validation}
+    Oidc, OidcConfig
 };
 use actix_cors::Cors;
 use actix_files as fs;
