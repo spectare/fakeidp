@@ -6,7 +6,7 @@ use biscuit::jwk::*;
 use biscuit::jws::Secret;
 use biscuit::Empty;
 use num::BigUint;
-use ring::signature::KeyPair;
+use ring::{rsa::PublicKeyComponents, signature::KeyPair};
 use serde_json::json;
 use std::format;
 
@@ -19,8 +19,8 @@ pub async fn keys(state: web::Data<AppState>) -> Result<HttpResponse, Error> {
 pub fn create_jwk_set(secret: Secret) -> JWKSet<Empty> {
     let public_key = match secret {
         Secret::RsaKeyPair(ring_pair) => {
-            let s = ring_pair.clone();
-            let pk = s.public_key().clone();
+            let cloned_pair = ring_pair.clone();
+            let pk = PublicKeyComponents::<Vec<_>>::from(cloned_pair.public_key());
             Some(pk)
         }
         _ => None,
@@ -35,8 +35,8 @@ pub fn create_jwk_set(secret: Secret) -> JWKSet<Empty> {
                 ..Default::default()
             },
             algorithm: AlgorithmParameters::RSA(RSAKeyParameters {
-                n: BigUint::from_bytes_be(public_key.modulus().big_endian_without_leading_zero()),
-                e: BigUint::from_bytes_be(public_key.exponent().big_endian_without_leading_zero()),
+                n: BigUint::from_bytes_be(public_key.n.as_slice()),
+                e: BigUint::from_bytes_be(public_key.e.as_slice()),
                 ..Default::default()
             }),
             additional: Default::default(),
