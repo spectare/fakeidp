@@ -22,7 +22,7 @@ clap = {version = "4.4.7", features = ["derive", "unicode", "env"]}
 der-parser = "8.2.0"
 env_logger = "0.10.0"
 futures = "0.3.28"
-futures-core = {version = "0.3.28", default-features = false, features = ["alloc"]}
+futures-core = {version = "0.3.29", default-features = false, features = ["alloc"]}
 futures-util = {version = "0.3.28", default-features = false, features = ["alloc"]}
 #num = "0.3"
 tokio = {version = "1.33.0", features = ["full"]}
