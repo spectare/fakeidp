@@ -2,7 +2,7 @@
 # Cargo Build Stage
 # ------------------------------------------------------------------------------
 
-FROM rust:1.73.0-bookworm as cargo-build
+FROM rust:1.74.0-bookworm as cargo-build
 
 RUN apt-get update
 
