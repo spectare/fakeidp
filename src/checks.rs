@@ -1,6 +1,5 @@
 use actix_web::{Error, HttpResponse};
 use serde_derive::{Deserialize, Serialize};
-use sysinfo::SystemExt;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
