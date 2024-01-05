@@ -1,10 +1,8 @@
-use actix_4_jwt_auth::{
-    Oidc, OidcConfig
-};
+use actix_4_jwt_auth::{Oidc, OidcConfig};
 use actix_cors::Cors;
 use actix_files as fs;
 use actix_web::{middleware, web, App, HttpServer};
-use biscuit::{jws::Secret};
+use biscuit::jws::Secret;
 use clap::Parser;
 use std::process::Command;
 
@@ -71,7 +69,7 @@ async fn main() -> std::io::Result<()> {
     let rsa_keys = Secret::rsa_keypair_from_file(keyfile_to_use).expect("Cannot read RSA keypair");
 
     let jwk_set = discovery::create_jwk_set(rsa_keys.clone());
- 
+
     let oidc = Oidc::new(OidcConfig::Jwks(jwk_set)).await.unwrap();
 
     let mut user = String::from_utf8(Command::new("whoami").output().unwrap().stdout).unwrap();

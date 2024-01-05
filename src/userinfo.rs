@@ -1,11 +1,6 @@
-use crate::discovery::create_jwk_set;
-use actix_4_jwt_auth::{
-    biscuit::Validation, AuthenticatedUser, Oidc, OidcBiscuitValidator, OidcConfig,
-};
-use actix_web::{web, Error, HttpResponse};
-use biscuit::jws::*;
+use actix_4_jwt_auth::AuthenticatedUser;
+use actix_web::{Error, HttpResponse};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use std::str;
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
@@ -23,10 +18,15 @@ pub async fn user_info(user: AuthenticatedUser<FoundClaims>) -> Result<HttpRespo
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::discovery::create_jwk_set;
     use crate::token;
+    use actix_4_jwt_auth::{Oidc, OidcBiscuitValidator, OidcConfig};
+    use actix_web::web;
     use actix_web::{http, test, App};
-    use biscuit::ValidationOptions;
+    use biscuit::jws::Secret;
+    use biscuit::{Validation, ValidationOptions};
     use serde_json::json;
+    use serde_json::Value;
     use std::str;
 
     async fn create_oidc(secret: &Secret) -> Oidc {

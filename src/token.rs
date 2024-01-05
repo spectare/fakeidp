@@ -64,9 +64,9 @@ pub fn create_jwt(signing_secret: &Secret, claims: Value) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{http, test, web, App};
-    use actix_4_jwt_auth::{ Oidc, OidcConfig};
     use crate::discovery::create_jwk_set;
+    use actix_4_jwt_auth::{Oidc, OidcConfig};
+    use actix_web::{http, test, web, App};
     use std::str;
 
     async fn create_oidc(secret: &Secret) -> Oidc {

@@ -1,13 +1,13 @@
-use std::ops::Add;
 use crate::AppState;
-use actix_web::{web, Error, HttpResponse};
 use actix_web::http::StatusCode;
-use serde_derive::Deserialize;
-use serde_json::json;
-use std::time::SystemTime;
+use actix_web::{web, Error, HttpResponse};
+use data_encoding::BASE64URL_NOPAD;
 use der_parser::nom::Slice;
 use ring::digest;
-use data_encoding::BASE64URL_NOPAD;
+use serde_derive::Deserialize;
+use serde_json::json;
+use std::ops::Add;
+use std::time::SystemTime;
 
 #[derive(Deserialize)]
 pub struct AuthParameters {
@@ -19,15 +19,18 @@ pub struct AuthParameters {
     nonce: String,
 }
 
-pub async fn auth(
-    info: web::Query<AuthParameters>
-) -> Result<HttpResponse, Error> {
-    let body = format!(include_str!("../template/login.html"), state = info.state, redirect_uri = info.redirect_uri, nonce = info.nonce, client_id = info.client_id);
+pub async fn auth(info: web::Query<AuthParameters>) -> Result<HttpResponse, Error> {
+    let body = format!(
+        include_str!("../template/login.html"),
+        state = info.state,
+        redirect_uri = info.redirect_uri,
+        nonce = info.nonce,
+        client_id = info.client_id
+    );
     Ok(HttpResponse::build(StatusCode::OK)
         .content_type("text/html; charset=utf-8")
         .body(body))
 }
-
 
 #[derive(Deserialize)]
 pub struct LoginParameters {
@@ -45,20 +48,27 @@ pub async fn login(
     let signing_secret = &app_state.rsa_key_pair;
 
     // Setup a a series of claims and corrections.
-    let iat = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().as_secs();
-    let exp = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH).unwrap().add(std::time::Duration::from_secs(12200)).as_secs();
+    let iat = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    let exp = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .add(std::time::Duration::from_secs(12200))
+        .as_secs();
 
     // Create the access token
     let access_claims = json!(
-            {
-                "iss": app_state.exposed_host,
-                "sub": form.sub,
-                "aud": form.client_id,
-                "name": form.name,
-                "iat": iat,
-                "exp": exp
-            }
-        );
+        {
+            "iss": app_state.exposed_host,
+            "sub": form.sub,
+            "aud": form.client_id,
+            "name": form.name,
+            "iat": iat,
+            "exp": exp
+        }
+    );
     let access_token = crate::token::create_jwt(&signing_secret, access_claims);
 
     // at_hash. Access Token hash value.
@@ -71,17 +81,17 @@ pub async fn login(
     let at_hash = BASE64URL_NOPAD.encode(tb_encoded.slice(0..16));
 
     let id_claims = json!(
-            {
-                "iss": app_state.exposed_host,
-                "sub": form.sub,
-                "aud": form.client_id,
-                "name": form.name,
-                "iat": iat,
-                "exp": exp,
-                "nonce": form.nonce,
-                "at_hash": at_hash
-            }
-        );
+        {
+            "iss": app_state.exposed_host,
+            "sub": form.sub,
+            "aud": form.client_id,
+            "name": form.name,
+            "iat": iat,
+            "exp": exp,
+            "nonce": form.nonce,
+            "at_hash": at_hash
+        }
+    );
     let id_token = crate::token::create_jwt(&signing_secret, id_claims);
 
     Ok(HttpResponse::build(StatusCode::SEE_OTHER)
@@ -89,4 +99,3 @@ pub async fn login(
         .finish()
     )
 }
-
