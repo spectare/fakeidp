@@ -19,7 +19,7 @@ bytes = "1.5.0"
 chrono = "0.4"
 num = "0.4"
 clap = {version = "4.5.1", features = ["derive", "unicode", "env"]}
-der-parser = "8.2.0"
+der-parser = "9.0.0"
 env_logger = "0.10.2"
 futures = "0.3.30"
 futures-core = {version = "0.3.29", default-features = false, features = ["alloc"]}
