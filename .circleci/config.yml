@@ -39,7 +39,7 @@ jobs:
     resource_class: large
     steps:
       - setup_remote_docker:
-          version: 20.10.18
+          version: default 
       - checkout
       - run:
           name: Create the Multi Arch build structure
@@ -68,7 +68,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker:
-          version: 20.10.18
+          version: default 
       - run:
           name: Create the Multi Arch build structure
           command: |
