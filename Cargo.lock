@@ -4,9 +4,9 @@ version = 3
 
 [[package]]
 name = "actix-4-jwt-auth"
-version = "1.2.0"
+version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79dfd346d7743e4f00d578a046d4b3bcf4be964a07978fecd3849e8ea36e4e00"
+checksum = "00555179a66c2d4abadfb5f0cc1792e4974b03c5369309996851b94e0c81e2ed"
 dependencies = [
  "actix-web",
  "awc",
@@ -461,9 +461,9 @@ checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
 name = "awc"
-version = "3.2.0"
+version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7fa3c705a9c7917ac0f41c0757a0a747b43bbc29b0b364b081bd7c5fc67fb223"
+checksum = "68c09cc97310b926f01621faee652f3d1b0962545a3cec6c9ac07def9ea36c2c"
 dependencies = [
  "actix-codec",
  "actix-http",
@@ -974,7 +974,7 @@ dependencies = [
 
 [[package]]
 name = "fakeidp"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "actix-4-jwt-auth",
  "actix-cors",
@@ -2440,18 +2440,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.50"
+version = "1.0.58"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f9a7210f5c9a7156bb50aa36aed4c95afb51df0df00713949448cf9e97d382d2"
+checksum = "03468839009160513471e86a034bb2c5c0e4baae3b43f79ffc55c4a5427b3297"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "1.0.50"
+version = "1.0.58"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "266b2e40bc00e5a6c09c3584011e08b06f123c00362c92b975ba9843aaaa14b8"
+checksum = "c61f3ba182994efc43764a46c018c347bc492c79f024e705f46567b418f6d4f7"
 dependencies = [
  "proc-macro2",
  "quote",
