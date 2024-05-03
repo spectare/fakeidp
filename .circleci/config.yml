@@ -53,8 +53,7 @@ jobs:
             echo `git describe --tags --exact-match` > /tmp/version.txt
             TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            #docker buildx build --platform=linux/amd64,linux/arm64 --push \
-            docker buildx build --platform=linux/amd64 --push \
+            docker buildx build --platform=linux/amd64,linux/arm64 --push \
               --progress=plain\
               -t spectare/fakeidp:latest \
               --build-arg VERSION=$(cat /tmp/version.txt) \
@@ -80,8 +79,7 @@ jobs:
             echo `git describe --tags --exact-match` > /tmp/version.txt
             TAG=$(cat /tmp/version.txt)
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-            #docker buildx build --platform=linux/arm64,linux/amd64 --push \
-            docker buildx build --platform=linux/amd64 --push \
+            docker buildx build --platform=linux/arm64,linux/amd64 --push \
               --progress=plain\
               -t spectare/fakeidp:$TAG \
               -t spectare/fakeidp:latest \
