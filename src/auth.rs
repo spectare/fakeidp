@@ -69,7 +69,7 @@ pub async fn login(
             "exp": exp
         }
     );
-    let access_token = crate::token::create_jwt(&signing_secret, access_claims);
+    let access_token = crate::token::create_jwt(signing_secret, access_claims);
 
     // at_hash. Access Token hash value.
     // Its value is the base64url encoding of the left-most half of the hash of the octets of the ASCII representation of the access_token value,
@@ -92,7 +92,7 @@ pub async fn login(
             "at_hash": at_hash
         }
     );
-    let id_token = crate::token::create_jwt(&signing_secret, id_claims);
+    let id_token = crate::token::create_jwt(signing_secret, id_claims);
 
     Ok(HttpResponse::build(StatusCode::SEE_OTHER)
         .insert_header(("Location", format!("{redirect_uri}#access_token={access_token}&expires_in=86399&id_token={id_token}&state={state}&token_type=bearer", redirect_uri = form.redirect_uri, access_token = access_token, id_token = id_token, state = form.state)))
