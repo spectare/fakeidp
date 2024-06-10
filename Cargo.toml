@@ -7,7 +7,7 @@ version = "1.0.3"
 [dependencies]
 actix-cors = "0.7.0"
 actix-multipart = "0.6.2"
-actix-rt = "2.9.0"
+actix-rt = "2.10.0"
 actix-service = "2.0.2"
 actix-web = "4.7.0"
 actix-4-jwt-auth = "1.2.3"
